@@ -616,7 +616,7 @@ class ScreenshotAnalyzer:
             media_type = "image/png"
 
         # ── Call Claude Vision if we have a key and real image data ───────
-        if api_key and raw_b64 and len(raw_b64) > 100:
+        if api_key and raw_b64 and len(raw_b64) > 50:
             try:
                 prompt = (
                     "You are an expert technical analyst. Analyze this trading chart image carefully and respond ONLY with a valid JSON object (no markdown, no extra text) with these exact keys:\n"
@@ -1269,7 +1269,8 @@ def api_status():
         "workers": PREDICTION_WORKERS,
         "live_streaming": is_live_streaming,
         "win_rate": round(accuracy_tracker.get_win_rate() * 100, 1),
-        "portfolio_value": round(portfolio_value, 2)
+        "portfolio_value": round(portfolio_value, 2),
+        "ai_vision": "enabled" if os.environ.get("ANTHROPIC_API_KEY") else "disabled"
     })
 
 
