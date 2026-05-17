@@ -1274,6 +1274,39 @@ def api_status():
     })
 
 
+@app.route('/api/training/stats')
+def api_training_stats():
+    """Get universal training statistics"""
+    try:
+        # Try to import and get stats from training system
+        from universal_training_system import UniversalTrainingEngine, UniversalDataSource
+        
+        # Check if training stats file exists
+        stats_file = os.path.join(BASE_DIR, '.smart_cache', 'training_stats.json')
+        if os.path.exists(stats_file):
+            with open(stats_file, 'r') as f:
+                stats = json.load(f)
+        else:
+            stats = {
+                "total_trained": 0,
+                "successful": 0,
+                "failed": 0,
+                "models_trained": 0,
+                "success_rate": 0
+            }
+        
+        return jsonify({
+            "status": "active",
+            "total_assets": len(UniversalDataSource.get_all_assets()),
+            **stats
+        })
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "error": str(e)
+        })
+
+
 # ============================================================
 # AGENTS STATUS API
 # ============================================================
@@ -1284,7 +1317,7 @@ def api_agents():
     import threading
     agent_threads = []
     for t in threading.enumerate():
-        if t.name in ("PerpetualOrchestrator", "MultiAgentSystem", "MainAgency", "live-prediction-stream"):
+        if t.name in ("PerpetualOrchestrator", "MultiAgentSystem", "MainAgency", "UniversalTraining", "live-prediction-stream"):
             agent_threads.append({
                 "name": t.name,
                 "status": "running" if t.is_alive() else "stopped",
@@ -1581,12 +1614,23 @@ def _run_main_agency():
         logger.error(f"[AgentSystem] Main Agency error: {e}")
 
 
+def _run_universal_training():
+    """Run universal training system"""
+    try:
+        from universal_training_system import UniversalTrainingLoop
+        training_loop = UniversalTrainingLoop()
+        training_loop.start_continuous_training()
+    except Exception as e:
+        logger.error(f"[UniversalTraining] Error: {e}")
+
+
 def start_all_agents():
     """Launch all agent systems as background daemon threads."""
     agents = [
         ("PerpetualOrchestrator", _run_perpetual_orchestrator),
         ("MultiAgentSystem",      _run_multi_agent_system),
         ("MainAgency",            _run_main_agency),
+        ("UniversalTraining",     _run_universal_training),
     ]
     for name, target in agents:
         t = threading.Thread(target=target, daemon=True, name=name)
