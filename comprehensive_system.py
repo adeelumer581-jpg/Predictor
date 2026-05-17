@@ -1455,6 +1455,12 @@ def start_background_workers():
         return
     thread = threading.Thread(target=live_prediction_stream, daemon=True, name="live-prediction-stream")
     thread.start()
+    # Keep-alive for Render free tier (prevents sleep after 15 min inactivity)
+    try:
+        from keep_alive import start_keep_alive
+        start_keep_alive()
+    except Exception:
+        pass
 
 
 # ============================================================
