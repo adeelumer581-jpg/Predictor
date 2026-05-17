@@ -10,3 +10,6 @@ node_modules/
 templates/
 *.egg-info/
 .pytest_cache/
+market_data.db
+scratch/
+apex_accuracy.json

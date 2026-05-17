@@ -1,1 +1,1 @@
-web: python comprehensive_system.py
+web: gunicorn -k eventlet -w 1 --bind 0.0.0.0:$PORT web_ui:app

@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: stock-predictor
+    name: apex-predictor
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: python comprehensive_system.py
+    startCommand: gunicorn -k eventlet -w 1 --bind 0.0.0.0:$PORT web_ui:app
