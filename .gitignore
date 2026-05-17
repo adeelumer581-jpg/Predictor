@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pkl
+*.log
+*.json
+node_modules/
+.env
+.git/
+templates/
+*.egg-info/
+.pytest_cache/
