@@ -584,6 +584,7 @@
                 formData.append('image', input.files[0]);
 
                 document.getElementById('screenshot-result').classList.add('hidden');
+                document.getElementById('screenshot-loading').classList.remove('hidden');
 
                 try {
                     const response = await fetch('/api/analyze/screenshot', {
@@ -594,11 +595,28 @@
 
                     document.getElementById('pattern-result').textContent = data.pattern || 'N/A';
                     document.getElementById('trend-result').textContent = data.trend || 'N/A';
+                    document.getElementById('trend-result').className = 'font-bold ' + (data.trend === 'UPTREND' ? 'text-green-400' : data.trend === 'DOWNTREND' ? 'text-red-400' : 'text-yellow-400');
                     document.getElementById('signal-result').textContent = data.signal || 'N/A';
+                    document.getElementById('signal-result').className = 'font-bold text-xl ' + (data.signal === 'BUY' ? 'text-green-400' : data.signal === 'SELL' ? 'text-red-400' : 'text-yellow-400');
                     document.getElementById('confidence-result').textContent = ((data.confidence || 0) * 100).toFixed(0) + '%';
+                    if (data.indicators) {
+                        document.getElementById('rsi-result').textContent = data.indicators.rsi ?? '--';
+                        document.getElementById('macd-result').textContent = data.indicators.macd ?? '--';
+                        document.getElementById('support-result').textContent = data.indicators.support ? '$' + data.indicators.support : '--';
+                        document.getElementById('resistance-result').textContent = data.indicators.resistance ? '$' + data.indicators.resistance : '--';
+                    }
+                    // Show AI analysis text if available
+                    const analysisEl = document.getElementById('ai-analysis-text');
+                    const keyLevelsEl = document.getElementById('ai-key-levels');
+                    const poweredByEl = document.getElementById('ai-powered-by');
+                    if (analysisEl) analysisEl.textContent = data.analysis || data.pattern_description || '';
+                    if (keyLevelsEl) keyLevelsEl.textContent = data.key_levels || '';
+                    if (poweredByEl) poweredByEl.textContent = data.powered_by || '';
                     document.getElementById('screenshot-result').classList.remove('hidden');
                 } catch (e) {
-                    alert('Error analyzing screenshot');
+                    alert('Error analyzing screenshot. Please try again.');
+                } finally {
+                    document.getElementById('screenshot-loading').classList.add('hidden');
                 }
             }
         }
@@ -746,7 +764,8 @@
             document.getElementById('screenshot-loading').classList.remove('hidden');
 
             try {
-                const data = await fetchJson('/api/analyze/screenshot', {method: 'POST', body: formData}, 25000);
+                const response = await fetch('/api/analyze/screenshot', { method: 'POST', body: formData });
+                const data = await response.json();
                 document.getElementById('pattern-result').textContent = data.pattern || 'N/A';
                 document.getElementById('trend-result').textContent = data.trend || 'N/A';
                 document.getElementById('trend-result').className = 'font-bold ' + (data.trend === 'UPTREND' ? 'text-green-400' : data.trend === 'DOWNTREND' ? 'text-red-400' : 'text-yellow-400');
@@ -756,9 +775,673 @@
                 if (data.indicators) {
                     document.getElementById('rsi-result').textContent = data.indicators.rsi ?? '--';
                     document.getElementById('macd-result').textContent = data.indicators.macd ?? '--';
-                    document.getElementById('support-result').textContent = data.indicators.support ? '$' + data.indicators.support : '--';
-                    document.getElementById('resistance-result').textContent = data.indicators.resistance ? '$' + data.indicators.resistance : '--';
+                    document.getElementById('support-result').textContent = data.indicators.support ? '
+
+        async function quickPredict() {
+            const tickerInput = document.getElementById('ticker-input');
+            const ticker = tickerInput.value.trim().toUpperCase();
+            const message = document.getElementById('quick-message');
+            const button = document.getElementById('predict-button');
+            if (!ticker) {
+                message.textContent = 'Enter a ticker first.';
+                message.className = 'mb-4 text-sm text-yellow-400';
+                return;
+            }
+
+            button.disabled = true;
+            button.textContent = 'Loading';
+            message.textContent = 'Getting latest market data...';
+            message.className = 'mb-4 text-sm text-gray-400';
+            document.getElementById('quick-result').classList.add('hidden');
+
+            try {
+                const data = await fetchJson('/api/predict/' + encodeURIComponent(ticker), {}, 25000);
+                if (!data.prediction) throw new Error(data.error || 'Prediction unavailable');
+
+                document.getElementById('qr-ticker').textContent = data.ticker;
+                document.getElementById('qr-prediction').textContent = data.prediction;
+                document.getElementById('qr-prediction').className = 'font-bold text-xl ' + (data.prediction === 'UP' ? 'text-green-400' : 'text-red-400');
+                document.getElementById('qr-confidence').textContent = (Number(data.confidence || 0) * 100).toFixed(0) + '%';
+                document.getElementById('qr-price').textContent = data.current_price ?? 'N/A';
+                document.getElementById('quick-result').classList.remove('hidden');
+                message.textContent = data.model_source === 'technical_signal' ? 'Used technical signal fallback.' : 'Prediction loaded.';
+                message.className = 'mb-4 text-sm text-green-400';
+            } catch (e) {
+                message.textContent = e.name === 'AbortError' ? 'The data provider timed out. Try again.' : e.message;
+                message.className = 'mb-4 text-sm text-red-400';
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Predict';
+            }
+        }
+
+        async function updateStatus() {
+            try {
+                const data = await fetchJson('/api/status', {}, 8000);
+                document.getElementById('total-models').textContent = data.models_loaded ?? 0;
+                document.getElementById('total-predictions').textContent = data.predictions_made ?? 0;
+                document.getElementById('total-assets').textContent = data.assets_tracked ?? 0;
+                document.getElementById('memory-usage').textContent = Math.round(data.memory_mb || 0);
+                document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+            } catch (e) {}
+        }
+
+        // Socket updates
+        socket.on('prediction_update', function(data) {
+            if (!tabCache.stocks || currentTab !== 'stocks') return;
+            const items = tabCache.stocks.items || [];
+            const index = items.findIndex(item => item.ticker === data.ticker);
+            if (index >= 0) items[index] = data;
+        });
+
+        // Upgraded Paper Trading & DNA-01 Order desk logic
+        let orderAction = 'BUY';
+        let equityChart = null;
+
+        function setOrderAction(action) {
+            orderAction = action;
+            const buyBtn = document.getElementById('action-buy-btn');
+            const sellBtn = document.getElementById('action-sell-btn');
+            
+            if (action === 'BUY') {
+                buyBtn.className = "flex-1 py-2 rounded-lg bg-green-500 text-black font-bold border border-green-400";
+                sellBtn.className = "flex-1 py-2 rounded-lg bg-transparent text-gray-400 hover:bg-white/5 border border-gray-800";
+                document.getElementById('submit-order-btn').className = "w-full py-3 rounded-xl bg-green-500 hover:bg-green-600 text-black font-bold text-center mt-2 transition";
+                document.getElementById('submit-order-btn').textContent = "Submit BUY Order";
+            } else {
+                buyBtn.className = "flex-1 py-2 rounded-lg bg-transparent text-gray-400 hover:bg-white/5 border border-gray-800";
+                sellBtn.className = "flex-1 py-2 rounded-lg bg-red-500 text-black font-bold border border-red-400";
+                document.getElementById('submit-order-btn').className = "w-full py-3 rounded-xl bg-red-500 hover:bg-red-600 text-black font-bold text-center mt-2 transition";
+                document.getElementById('submit-order-btn').textContent = "Submit SELL Order";
+            }
+            fetchOrderDeskPrice();
+        }
+
+        async function fetchOrderDeskPrice() {
+            const ticker = document.getElementById('order-ticker').value.toUpperCase().trim();
+            if (!ticker) return;
+
+            try {
+                const res = await fetchJson(`/api/predict/${ticker}`);
+                if (res.status === 'success' && res.current_price) {
+                    const price = parseFloat(res.current_price);
+                    document.getElementById('order-price').value = price.toFixed(2);
+                    
+                    // Fetch total equity from portfolio state or default to $100k
+                    const portRes = await fetchJson('/api/portfolio');
+                    const equity = portRes.equity || 100000.0;
+                    
+                    // Calculate DNA-01 Brackets (3% ATR estimate)
+                    const atr = price * 0.03;
+                    const stopLoss = orderAction === 'BUY' ? (price - atr) : (price + atr);
+                    const takeProfit = orderAction === 'BUY' ? (price + atr * 2.0) : (price - atr * 2.0);
+                    
+                    document.getElementById('order-sl').value = stopLoss.toFixed(2);
+                    document.getElementById('order-tp').value = takeProfit.toFixed(2);
+                    
+                    // DNA-01 1% position sizing recommendation
+                    const maxRisk = equity * 0.01;
+                    const stopLossDistance = Math.abs(price - stopLoss);
+                    const recommendedQty = Math.floor(maxRisk / stopLossDistance);
+                    
+                    document.getElementById('risk-size-recommendation').textContent = `${recommendedQty} Shares (Risktol: $${maxRisk.toFixed(0)})`;
+                    document.getElementById('risk-bracket-recommendation').textContent = `SL: ${stopLoss.toFixed(2)} | TP: ${takeProfit.toFixed(2)} (2:1 Ratio)`;
+                    
+                    if (!document.getElementById('order-qty').value) {
+                        document.getElementById('order-qty').value = recommendedQty;
+                    }
                 }
+            } catch (e) {
+                console.error("Error fetching order price:", e);
+            }
+        }
+
+        async function placePaperTrade() {
+            const ticker = document.getElementById('order-ticker').value.toUpperCase().trim();
+            const qty = parseInt(document.getElementById('order-qty').value);
+            const stopLoss = parseFloat(document.getElementById('order-sl').value);
+            const takeProfit = parseFloat(document.getElementById('order-tp').value);
+
+            if (!ticker || isNaN(qty) || qty <= 0) {
+                alert('Please enter a valid ticker and quantity.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/portfolio/trade', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ticker,
+                        action: orderAction,
+                        qty,
+                        stop_loss: stopLoss,
+                        take_profit: takeProfit
+                    })
+                });
+                const res = await response.json();
+                if (res.status === 'success') {
+                    alert(res.message);
+                    loadPortfolioData();
+                    updateStatus();
+                } else {
+                    alert('Order Rejected: ' + res.message);
+                }
+            } catch (e) {
+                alert('Error placing virtual order');
+            }
+        }
+
+        async function closePosition(ticker, shares) {
+            if (!confirm(`Are you sure you want to close your position in ${ticker}?`)) return;
+            try {
+                const response = await fetch('/api/portfolio/trade', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ticker,
+                        action: 'SELL',
+                        qty: shares
+                    })
+                });
+                const res = await response.json();
+                if (res.status === 'success') {
+                    alert(res.message);
+                    loadPortfolioData();
+                    updateStatus();
+                } else {
+                    alert('Close Position Failed: ' + res.message);
+                }
+            } catch (e) {
+                alert('Error closing position');
+            }
+        }
+
+        async function resetPortfolio() {
+            if (!confirm('Are you sure you want to completely reset your virtual cash to $100,000.00? This clears active positions.')) return;
+            try {
+                const res = await fetchJson('/api/portfolio/reset', { method: 'POST' });
+                alert(res.message);
+                loadPortfolioData();
+                updateStatus();
+            } catch (e) {
+                alert('Reset failed');
+            }
+        }
+
+        async function toggleAutoTrading() {
+            const checked = document.getElementById('auto-trade-toggle').checked;
+            try {
+                const res = await fetch('/api/portfolio/auto_trade', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ enabled: checked })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    alert(checked ? 'AI Robo-Advisor ACTIVATED! Enforcing DNA-01 rules autonomously.' : 'AI Robo-Advisor DEACTIVATED.');
+                }
+            } catch (e) {
+                alert('Error updating Robo-Advisor state');
+            }
+        }
+
+        async function loadPortfolioData() {
+            try {
+                const data = await fetchJson('/api/portfolio');
+                
+                // Set stats
+                document.getElementById('trading-equity').textContent = '$' + data.equity.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('trading-cash').textContent = '$' + data.cash.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                const pnl = data.unrealized_pnl;
+                const pnlEl = document.getElementById('trading-unrealized-pnl');
+                pnlEl.textContent = (pnl >= 0 ? '+' : '') + '$' + pnl.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                pnlEl.className = `text-2xl font-bold mt-1 ${pnl >= 0 ? 'text-green-400' : 'text-red-400'}`;
+                
+                const ret = data.total_return;
+                const retEl = document.getElementById('trading-return');
+                retEl.textContent = (ret >= 0 ? '+' : '') + ret.toFixed(2) + '%';
+                retEl.className = `text-2xl font-bold mt-1 ${ret >= 0 ? 'text-green-400' : 'text-red-400'}`;
+                
+                document.getElementById('auto-trade-toggle').checked = data.auto_trade_enabled;
+
+                // Render positions
+                const tbody = document.getElementById('positions-list');
+                if (!data.positions || data.positions.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="9" class="py-8 text-center text-gray-500">No active positions open. Use the order entry form to start trading.</td>
+                        </tr>
+                    `;
+                } else {
+                    tbody.innerHTML = data.positions.map(p => {
+                        const pnlColor = p.pnl >= 0 ? 'text-green-400' : 'text-red-400';
+                        return `
+                            <tr class="border-b border-gray-800/40 hover:bg-white/5 transition">
+                                <td class="py-3 font-bold">${p.ticker}</td>
+                                <td class="py-3"><span class="px-2 py-0.5 rounded text-xs font-bold ${p.type === 'BUY' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}">${p.type}</span></td>
+                                <td class="py-3">${p.shares}</td>
+                                <td class="py-3 font-mono">$${p.entry_price.toFixed(2)}</td>
+                                <td class="py-3 font-mono">$${p.current_price.toFixed(2)}</td>
+                                <td class="py-3 text-red-400/90 font-mono">$${p.stop_loss.toFixed(2)}</td>
+                                <td class="py-3 text-green-400/90 font-mono">$${p.take_profit.toFixed(2)}</td>
+                                <td class="py-3 font-mono font-bold ${pnlColor}">${p.pnl >= 0 ? '+' : ''}$${p.pnl.toFixed(2)} (${p.pnl_percent >= 0 ? '+' : ''}${p.pnl_percent.toFixed(2)}%)</td>
+                                <td class="py-3 text-right">
+                                    <button onclick="closePosition('${p.ticker}', ${p.shares})" class="px-2.5 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs rounded border border-red-500/30 font-bold transition">Close</button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+
+                // Render Equity Curve Chart
+                const history = data.equity_history || [];
+                const labels = history.map(h => new Date(h.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+                const equityPoints = history.map(h => h.equity);
+
+                if (equityChart) {
+                    equityChart.destroy();
+                }
+
+                const ctx = document.getElementById('equityCurveChart').getContext('2d');
+                equityChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Account Equity ($)',
+                            data: equityPoints,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.05)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 2,
+                            pointRadius: 2,
+                            pointHoverRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: {
+                                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                                ticks: { color: 'rgba(255, 255, 255, 0.5)', maxTicksLimit: 8 }
+                            },
+                            y: {
+                                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                                ticks: { color: 'rgba(255, 255, 255, 0.5)' }
+                            }
+                        }
+                    }
+                });
+            } catch (e) {
+                console.error("Error loading portfolio:", e);
+            }
+        }
+
+        // Initial load
+        setActiveTab(currentTab);
+        loadData('stocks');
+        updateStatus();
+        setInterval(updateStatus, 10000);
+        setInterval(() => {
+            if (currentTab !== 'analyze') loadData(currentTab);
+        }, 60000);
+
+        // Register PWA Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('PWA Service Worker registered!', reg))
+                    .catch(err => console.error('PWA Service Worker registration failed:', err));
+            });
+        }
+    </script>
+</body>
+</html>
+ + data.indicators.support : '--';
+                    document.getElementById('resistance-result').textContent = data.indicators.resistance ? '
+
+        async function quickPredict() {
+            const tickerInput = document.getElementById('ticker-input');
+            const ticker = tickerInput.value.trim().toUpperCase();
+            const message = document.getElementById('quick-message');
+            const button = document.getElementById('predict-button');
+            if (!ticker) {
+                message.textContent = 'Enter a ticker first.';
+                message.className = 'mb-4 text-sm text-yellow-400';
+                return;
+            }
+
+            button.disabled = true;
+            button.textContent = 'Loading';
+            message.textContent = 'Getting latest market data...';
+            message.className = 'mb-4 text-sm text-gray-400';
+            document.getElementById('quick-result').classList.add('hidden');
+
+            try {
+                const data = await fetchJson('/api/predict/' + encodeURIComponent(ticker), {}, 25000);
+                if (!data.prediction) throw new Error(data.error || 'Prediction unavailable');
+
+                document.getElementById('qr-ticker').textContent = data.ticker;
+                document.getElementById('qr-prediction').textContent = data.prediction;
+                document.getElementById('qr-prediction').className = 'font-bold text-xl ' + (data.prediction === 'UP' ? 'text-green-400' : 'text-red-400');
+                document.getElementById('qr-confidence').textContent = (Number(data.confidence || 0) * 100).toFixed(0) + '%';
+                document.getElementById('qr-price').textContent = data.current_price ?? 'N/A';
+                document.getElementById('quick-result').classList.remove('hidden');
+                message.textContent = data.model_source === 'technical_signal' ? 'Used technical signal fallback.' : 'Prediction loaded.';
+                message.className = 'mb-4 text-sm text-green-400';
+            } catch (e) {
+                message.textContent = e.name === 'AbortError' ? 'The data provider timed out. Try again.' : e.message;
+                message.className = 'mb-4 text-sm text-red-400';
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Predict';
+            }
+        }
+
+        async function updateStatus() {
+            try {
+                const data = await fetchJson('/api/status', {}, 8000);
+                document.getElementById('total-models').textContent = data.models_loaded ?? 0;
+                document.getElementById('total-predictions').textContent = data.predictions_made ?? 0;
+                document.getElementById('total-assets').textContent = data.assets_tracked ?? 0;
+                document.getElementById('memory-usage').textContent = Math.round(data.memory_mb || 0);
+                document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+            } catch (e) {}
+        }
+
+        // Socket updates
+        socket.on('prediction_update', function(data) {
+            if (!tabCache.stocks || currentTab !== 'stocks') return;
+            const items = tabCache.stocks.items || [];
+            const index = items.findIndex(item => item.ticker === data.ticker);
+            if (index >= 0) items[index] = data;
+        });
+
+        // Upgraded Paper Trading & DNA-01 Order desk logic
+        let orderAction = 'BUY';
+        let equityChart = null;
+
+        function setOrderAction(action) {
+            orderAction = action;
+            const buyBtn = document.getElementById('action-buy-btn');
+            const sellBtn = document.getElementById('action-sell-btn');
+            
+            if (action === 'BUY') {
+                buyBtn.className = "flex-1 py-2 rounded-lg bg-green-500 text-black font-bold border border-green-400";
+                sellBtn.className = "flex-1 py-2 rounded-lg bg-transparent text-gray-400 hover:bg-white/5 border border-gray-800";
+                document.getElementById('submit-order-btn').className = "w-full py-3 rounded-xl bg-green-500 hover:bg-green-600 text-black font-bold text-center mt-2 transition";
+                document.getElementById('submit-order-btn').textContent = "Submit BUY Order";
+            } else {
+                buyBtn.className = "flex-1 py-2 rounded-lg bg-transparent text-gray-400 hover:bg-white/5 border border-gray-800";
+                sellBtn.className = "flex-1 py-2 rounded-lg bg-red-500 text-black font-bold border border-red-400";
+                document.getElementById('submit-order-btn').className = "w-full py-3 rounded-xl bg-red-500 hover:bg-red-600 text-black font-bold text-center mt-2 transition";
+                document.getElementById('submit-order-btn').textContent = "Submit SELL Order";
+            }
+            fetchOrderDeskPrice();
+        }
+
+        async function fetchOrderDeskPrice() {
+            const ticker = document.getElementById('order-ticker').value.toUpperCase().trim();
+            if (!ticker) return;
+
+            try {
+                const res = await fetchJson(`/api/predict/${ticker}`);
+                if (res.status === 'success' && res.current_price) {
+                    const price = parseFloat(res.current_price);
+                    document.getElementById('order-price').value = price.toFixed(2);
+                    
+                    // Fetch total equity from portfolio state or default to $100k
+                    const portRes = await fetchJson('/api/portfolio');
+                    const equity = portRes.equity || 100000.0;
+                    
+                    // Calculate DNA-01 Brackets (3% ATR estimate)
+                    const atr = price * 0.03;
+                    const stopLoss = orderAction === 'BUY' ? (price - atr) : (price + atr);
+                    const takeProfit = orderAction === 'BUY' ? (price + atr * 2.0) : (price - atr * 2.0);
+                    
+                    document.getElementById('order-sl').value = stopLoss.toFixed(2);
+                    document.getElementById('order-tp').value = takeProfit.toFixed(2);
+                    
+                    // DNA-01 1% position sizing recommendation
+                    const maxRisk = equity * 0.01;
+                    const stopLossDistance = Math.abs(price - stopLoss);
+                    const recommendedQty = Math.floor(maxRisk / stopLossDistance);
+                    
+                    document.getElementById('risk-size-recommendation').textContent = `${recommendedQty} Shares (Risktol: $${maxRisk.toFixed(0)})`;
+                    document.getElementById('risk-bracket-recommendation').textContent = `SL: ${stopLoss.toFixed(2)} | TP: ${takeProfit.toFixed(2)} (2:1 Ratio)`;
+                    
+                    if (!document.getElementById('order-qty').value) {
+                        document.getElementById('order-qty').value = recommendedQty;
+                    }
+                }
+            } catch (e) {
+                console.error("Error fetching order price:", e);
+            }
+        }
+
+        async function placePaperTrade() {
+            const ticker = document.getElementById('order-ticker').value.toUpperCase().trim();
+            const qty = parseInt(document.getElementById('order-qty').value);
+            const stopLoss = parseFloat(document.getElementById('order-sl').value);
+            const takeProfit = parseFloat(document.getElementById('order-tp').value);
+
+            if (!ticker || isNaN(qty) || qty <= 0) {
+                alert('Please enter a valid ticker and quantity.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/portfolio/trade', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ticker,
+                        action: orderAction,
+                        qty,
+                        stop_loss: stopLoss,
+                        take_profit: takeProfit
+                    })
+                });
+                const res = await response.json();
+                if (res.status === 'success') {
+                    alert(res.message);
+                    loadPortfolioData();
+                    updateStatus();
+                } else {
+                    alert('Order Rejected: ' + res.message);
+                }
+            } catch (e) {
+                alert('Error placing virtual order');
+            }
+        }
+
+        async function closePosition(ticker, shares) {
+            if (!confirm(`Are you sure you want to close your position in ${ticker}?`)) return;
+            try {
+                const response = await fetch('/api/portfolio/trade', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ticker,
+                        action: 'SELL',
+                        qty: shares
+                    })
+                });
+                const res = await response.json();
+                if (res.status === 'success') {
+                    alert(res.message);
+                    loadPortfolioData();
+                    updateStatus();
+                } else {
+                    alert('Close Position Failed: ' + res.message);
+                }
+            } catch (e) {
+                alert('Error closing position');
+            }
+        }
+
+        async function resetPortfolio() {
+            if (!confirm('Are you sure you want to completely reset your virtual cash to $100,000.00? This clears active positions.')) return;
+            try {
+                const res = await fetchJson('/api/portfolio/reset', { method: 'POST' });
+                alert(res.message);
+                loadPortfolioData();
+                updateStatus();
+            } catch (e) {
+                alert('Reset failed');
+            }
+        }
+
+        async function toggleAutoTrading() {
+            const checked = document.getElementById('auto-trade-toggle').checked;
+            try {
+                const res = await fetch('/api/portfolio/auto_trade', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ enabled: checked })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    alert(checked ? 'AI Robo-Advisor ACTIVATED! Enforcing DNA-01 rules autonomously.' : 'AI Robo-Advisor DEACTIVATED.');
+                }
+            } catch (e) {
+                alert('Error updating Robo-Advisor state');
+            }
+        }
+
+        async function loadPortfolioData() {
+            try {
+                const data = await fetchJson('/api/portfolio');
+                
+                // Set stats
+                document.getElementById('trading-equity').textContent = '$' + data.equity.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('trading-cash').textContent = '$' + data.cash.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                const pnl = data.unrealized_pnl;
+                const pnlEl = document.getElementById('trading-unrealized-pnl');
+                pnlEl.textContent = (pnl >= 0 ? '+' : '') + '$' + pnl.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                pnlEl.className = `text-2xl font-bold mt-1 ${pnl >= 0 ? 'text-green-400' : 'text-red-400'}`;
+                
+                const ret = data.total_return;
+                const retEl = document.getElementById('trading-return');
+                retEl.textContent = (ret >= 0 ? '+' : '') + ret.toFixed(2) + '%';
+                retEl.className = `text-2xl font-bold mt-1 ${ret >= 0 ? 'text-green-400' : 'text-red-400'}`;
+                
+                document.getElementById('auto-trade-toggle').checked = data.auto_trade_enabled;
+
+                // Render positions
+                const tbody = document.getElementById('positions-list');
+                if (!data.positions || data.positions.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="9" class="py-8 text-center text-gray-500">No active positions open. Use the order entry form to start trading.</td>
+                        </tr>
+                    `;
+                } else {
+                    tbody.innerHTML = data.positions.map(p => {
+                        const pnlColor = p.pnl >= 0 ? 'text-green-400' : 'text-red-400';
+                        return `
+                            <tr class="border-b border-gray-800/40 hover:bg-white/5 transition">
+                                <td class="py-3 font-bold">${p.ticker}</td>
+                                <td class="py-3"><span class="px-2 py-0.5 rounded text-xs font-bold ${p.type === 'BUY' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}">${p.type}</span></td>
+                                <td class="py-3">${p.shares}</td>
+                                <td class="py-3 font-mono">$${p.entry_price.toFixed(2)}</td>
+                                <td class="py-3 font-mono">$${p.current_price.toFixed(2)}</td>
+                                <td class="py-3 text-red-400/90 font-mono">$${p.stop_loss.toFixed(2)}</td>
+                                <td class="py-3 text-green-400/90 font-mono">$${p.take_profit.toFixed(2)}</td>
+                                <td class="py-3 font-mono font-bold ${pnlColor}">${p.pnl >= 0 ? '+' : ''}$${p.pnl.toFixed(2)} (${p.pnl_percent >= 0 ? '+' : ''}${p.pnl_percent.toFixed(2)}%)</td>
+                                <td class="py-3 text-right">
+                                    <button onclick="closePosition('${p.ticker}', ${p.shares})" class="px-2.5 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs rounded border border-red-500/30 font-bold transition">Close</button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+
+                // Render Equity Curve Chart
+                const history = data.equity_history || [];
+                const labels = history.map(h => new Date(h.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+                const equityPoints = history.map(h => h.equity);
+
+                if (equityChart) {
+                    equityChart.destroy();
+                }
+
+                const ctx = document.getElementById('equityCurveChart').getContext('2d');
+                equityChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Account Equity ($)',
+                            data: equityPoints,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.05)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 2,
+                            pointRadius: 2,
+                            pointHoverRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: {
+                                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                                ticks: { color: 'rgba(255, 255, 255, 0.5)', maxTicksLimit: 8 }
+                            },
+                            y: {
+                                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                                ticks: { color: 'rgba(255, 255, 255, 0.5)' }
+                            }
+                        }
+                    }
+                });
+            } catch (e) {
+                console.error("Error loading portfolio:", e);
+            }
+        }
+
+        // Initial load
+        setActiveTab(currentTab);
+        loadData('stocks');
+        updateStatus();
+        setInterval(updateStatus, 10000);
+        setInterval(() => {
+            if (currentTab !== 'analyze') loadData(currentTab);
+        }, 60000);
+
+        // Register PWA Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('PWA Service Worker registered!', reg))
+                    .catch(err => console.error('PWA Service Worker registration failed:', err));
+            });
+        }
+    </script>
+</body>
+</html>
+ + data.indicators.resistance : '--';
+                }
+                const analysisEl = document.getElementById('ai-analysis-text');
+                const keyLevelsEl = document.getElementById('ai-key-levels');
+                const poweredByEl = document.getElementById('ai-powered-by');
+                if (analysisEl) analysisEl.textContent = data.analysis || data.pattern_description || '';
+                if (keyLevelsEl) keyLevelsEl.textContent = data.key_levels || '';
+                if (poweredByEl) poweredByEl.textContent = data.powered_by || '';
                 document.getElementById('screenshot-result').classList.remove('hidden');
             } catch (e) {
                 alert('Error analyzing screenshot. Please try again.');

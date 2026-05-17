@@ -584,134 +584,167 @@ class NewsEngine:
 
 
 class ScreenshotAnalyzer:
-    """Analyze uploaded chart screenshots"""
-
-    CANDLESTICK_PATTERNS = {
-        "DOJI": {"signal": "neutral", "description": "Market indecision - trend may reverse"},
-        "HAMMER": {"signal": "bullish", "description": "Strong buying pressure - potential bottom"},
-        "SHOOTING_STAR": {"signal": "bearish", "description": "Selling pressure at top"},
-        "BULLISH_ENGULFING": {"signal": "bullish", "description": "Strong buy signal - reversal"},
-        "BEARISH_ENGULFING": {"signal": "bearish", "description": "Strong sell signal - reversal"},
-        "MORNING_STAR": {"signal": "bullish", "description": "Bullish reversal pattern"},
-        "EVENING_STAR": {"signal": "bearish", "description": "Bearish reversal pattern"},
-        "PIN_BAR": {"signal": "neutral", "description": "Price rejection - potential reversal"}
-    }
+    """Analyze uploaded chart screenshots using Claude Vision AI"""
 
     @staticmethod
     def analyze(image_data: str) -> Dict:
-        """Analyze chart screenshot with pattern detection"""
-        import random
-        random.seed(datetime.now().microsecond)
+        """
+        Analyze a chart screenshot using Claude claude-opus-4-5 vision.
+        image_data: base64-encoded image string (with or without data URI prefix).
+        """
+        import re, base64, urllib.request, json as _json
 
-        # Get live market data for analysis context
+        api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+
+        # ── Strip data-URI prefix if present ──────────────────────────────
+        raw_b64 = re.sub(r"^data:image/[^;]+;base64,", "", image_data or "").strip()
+
+        # Detect media type from prefix bytes
         try:
-            # Use recent market data to inform analysis
-            stocks = ["AAPL", "MSFT", "GOOGL", "TSLA", "NVDA"]
+            header = base64.b64decode(raw_b64[:16])
+            if header[:4] == b'\x89PNG':
+                media_type = "image/png"
+            elif header[:3] == b'\xff\xd8\xff':
+                media_type = "image/jpeg"
+            elif header[:4] == b'GIF8':
+                media_type = "image/gif"
+            elif header[:4] == b'RIFF':
+                media_type = "image/webp"
+            else:
+                media_type = "image/png"
+        except Exception:
+            media_type = "image/png"
+
+        # ── Call Claude Vision if we have a key and real image data ───────
+        if api_key and raw_b64 and len(raw_b64) > 100:
+            try:
+                prompt = (
+                    "You are an expert technical analyst. Analyze this trading chart image carefully and respond ONLY with a valid JSON object (no markdown, no extra text) with these exact keys:\n"
+                    "{\n"
+                    '  "pattern": "<candlestick pattern name>",\n'
+                    '  "pattern_description": "<what this pattern means>",\n'
+                    '  "trend": "<UPTREND|DOWNTREND|SIDEWAYS>",\n'
+                    '  "signal": "<BUY|SELL|HOLD>",\n'
+                    '  "confidence": <0.0-1.0>,\n'
+                    '  "analysis": "<2-3 sentence detailed analysis of what you see in the chart>",\n'
+                    '  "key_levels": "<important support/resistance levels you can see>",\n'
+                    '  "indicators": {\n'
+                    '    "rsi": "<value or description if visible>",\n'
+                    '    "macd": "<bullish|bearish|neutral>",\n'
+                    '    "volume": "<high|low|average if visible>",\n'
+                    '    "support": "<price level if visible>",\n'
+                    '    "resistance": "<price level if visible>"\n'
+                    "  }\n"
+                    "}\n"
+                    "Base your analysis ONLY on what you actually see in this specific chart image."
+                )
+
+                payload = _json.dumps({
+                    "model": "claude-opus-4-5",
+                    "max_tokens": 1024,
+                    "messages": [{
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "image",
+                                "source": {
+                                    "type": "base64",
+                                    "media_type": media_type,
+                                    "data": raw_b64
+                                }
+                            },
+                            {"type": "text", "text": prompt}
+                        ]
+                    }]
+                }).encode("utf-8")
+
+                req = urllib.request.Request(
+                    "https://api.anthropic.com/v1/messages",
+                    data=payload,
+                    headers={
+                        "x-api-key": api_key,
+                        "anthropic-version": "2023-06-01",
+                        "content-type": "application/json"
+                    },
+                    method="POST"
+                )
+
+                with urllib.request.urlopen(req, timeout=30) as resp:
+                    body = _json.loads(resp.read().decode("utf-8"))
+
+                text = body["content"][0]["text"].strip()
+                # Strip markdown code fences if Claude wraps in them
+                text = re.sub(r"^```[a-z]*\n?", "", text)
+                text = re.sub(r"\n?```$", "", text)
+
+                result = _json.loads(text)
+                result["status"] = "analyzed"
+                result["powered_by"] = "Claude Vision AI"
+                return result
+
+            except Exception as e:
+                logger.warning("Claude vision analysis failed: %s", e)
+                # Fall through to heuristic below
+
+        # ── Heuristic fallback (no API key or no image) ───────────────────
+        import random
+        random.seed(datetime.now().microsecond + len(raw_b64))
+
+        try:
+            stocks = ["AAPL", "MSFT", "GOOGL", "TSLA", "NVDA", "BTC-USD", "ETH-USD"]
             ticker = random.choice(stocks)
             stock = yf.Ticker(ticker)
             df = stock.history(period="30d")
 
             if df is not None and len(df) > 10:
-                # Calculate actual indicators
                 close = df['Close']
-                current_price = float(close.iloc[-1])
-
-                # RSI
                 delta = close.diff()
                 gain = delta.where(delta > 0, 0).rolling(14).mean()
                 loss = (-delta.where(delta < 0, 0)).rolling(14).mean()
                 rs = gain / loss.replace(0, 1)
                 rsi = float(100 - (100 / (1 + rs)).iloc[-1])
-
-                # MACD
                 ema12 = close.ewm(span=12).mean()
                 ema26 = close.ewm(span=26).mean()
                 macd_val = float((ema12 - ema26).iloc[-1])
+                sma_5 = float(close.rolling(5).mean().iloc[-1])
+                sma_20 = float(close.rolling(20).mean().iloc[-1]) if len(close) >= 20 else sma_5
 
-                # Trend
-                sma_5 = close.rolling(5).mean().iloc[-1]
-                sma_20 = close.rolling(20).mean().iloc[-1] if len(close) >= 20 else sma_5
-
-                if sma_5 > sma_20:
-                    trend = "UPTREND"
-                    signal = "BUY"
-                elif sma_5 < sma_20:
-                    trend = "DOWNTREND"
-                    signal = "SELL"
-                else:
-                    trend = "SIDEWAYS"
-                    signal = "HOLD"
-
-                # Support/Resistance
-                support = float(close.min())
-                resistance = float(close.max())
-
-                # Detect pattern based on RSI and MACD
+                trend = "UPTREND" if sma_5 > sma_20 else ("DOWNTREND" if sma_5 < sma_20 else "SIDEWAYS")
                 if rsi < 30:
-                    pattern = "HAMMER"
-                    pattern_info = ScreenshotAnalyzer.CANDLESTICK_PATTERNS["HAMMER"]
-                    if signal == "SELL":
-                        signal = "BUY"  # Oversold - buy signal
+                    pattern, signal, confidence = "HAMMER", "BUY", 0.82
                 elif rsi > 70:
-                    pattern = "SHOOTING_STAR"
-                    pattern_info = ScreenshotAnalyzer.CANDLESTICK_PATTERNS["SHOOTING_STAR"]
-                    if signal == "BUY":
-                        signal = "SELL"  # Overbought - sell signal
+                    pattern, signal, confidence = "SHOOTING_STAR", "SELL", 0.80
                 elif macd_val > 0:
-                    pattern = "BULLISH_ENGULFING"
-                    pattern_info = ScreenshotAnalyzer.CANDLESTICK_PATTERNS["BULLISH_ENGULFING"]
+                    pattern, signal, confidence = "BULLISH_ENGULFING", "BUY", 0.72
                 elif macd_val < 0:
-                    pattern = "BEARISH_ENGULFING"
-                    pattern_info = ScreenshotAnalyzer.CANDLESTICK_PATTERNS["BEARISH_ENGULFING"]
+                    pattern, signal, confidence = "BEARISH_ENGULFING", "SELL", 0.70
                 else:
-                    pattern = "DOJI"
-                    pattern_info = ScreenshotAnalyzer.CANDLESTICK_PATTERNS["DOJI"]
-
-                # Confidence based on RSI extremes
-                if rsi < 30 or rsi > 70:
-                    confidence = 0.85
-                elif rsi < 40 or rsi > 60:
-                    confidence = 0.75
-                else:
-                    confidence = 0.65
+                    pattern, signal, confidence = "DOJI", "HOLD", 0.60
 
                 return {
                     "status": "analyzed",
                     "pattern": pattern,
-                    "pattern_description": pattern_info["description"],
+                    "pattern_description": f"Based on live {ticker} data — add ANTHROPIC_API_KEY for real chart analysis",
                     "trend": trend,
                     "signal": signal,
                     "confidence": round(confidence, 2),
-                    "ticker_used": ticker,
+                    "analysis": f"Heuristic analysis using live {ticker} market data. RSI={rsi:.1f}, MACD={'bullish' if macd_val > 0 else 'bearish'}. Upload a chart and ensure ANTHROPIC_API_KEY is set for AI-powered analysis.",
+                    "key_levels": f"Support: {round(float(close.min()), 2)}, Resistance: {round(float(close.max()), 2)}",
                     "indicators": {
                         "rsi": round(rsi, 1),
                         "macd": "bullish" if macd_val > 0 else "bearish",
-                        "current_price": current_price,
-                        "support": round(support, 2),
-                        "resistance": round(resistance, 2)
-                    }
+                        "support": round(float(close.min()), 2),
+                        "resistance": round(float(close.max()), 2)
+                    },
+                    "powered_by": "Heuristic (no image/API key)"
                 }
-        except Exception as e:
+        except Exception:
             pass
 
-        # Fallback if live data fails
-        patterns = list(ScreenshotAnalyzer.CANDLESTICK_PATTERNS.keys())
-        pattern = random.choice(patterns)
-        pattern_info = ScreenshotAnalyzer.CANDLESTICK_PATTERNS[pattern]
-
         return {
-            "status": "analyzed",
-            "pattern": pattern,
-            "pattern_description": pattern_info["description"],
-            "trend": random.choice(["UPTREND", "DOWNTREND", "SIDEWAYS"]),
-            "signal": pattern_info["signal"].upper() if pattern_info["signal"] != "neutral" else "HOLD",
-            "confidence": round(random.uniform(0.60, 0.90), 2),
-            "indicators": {
-                "rsi": random.randint(30, 75),
-                "macd": random.choice(["bullish", "bearish"]),
-                "support": round(random.uniform(100, 400), 2),
-                "resistance": round(random.uniform(400, 800), 2)
-            }
+            "status": "error",
+            "error": "Could not analyze chart. Please upload a valid chart image.",
+            "powered_by": "None"
         }
 
 
@@ -1194,10 +1227,23 @@ def api_news():
 # API: Screenshot analysis
 @app.route('/api/analyze/screenshot', methods=['GET', 'POST'])
 def api_screenshot():
-    """Analyze uploaded screenshot"""
+    """Analyze uploaded screenshot using Claude Vision AI"""
     try:
-        # Always run analysis - works with or without image data
-        result = ScreenshotAnalyzer.analyze("screenshot_upload")
+        image_data = ""
+        # Accept JSON body with base64 image
+        if request.is_json:
+            body = request.get_json(silent=True) or {}
+            image_data = body.get("image", "") or body.get("image_data", "")
+        # Accept multipart form upload
+        if not image_data and "image" in request.files:
+            import base64
+            f = request.files["image"]
+            image_data = base64.b64encode(f.read()).decode("utf-8")
+        # Accept form field with base64
+        if not image_data:
+            image_data = request.form.get("image", "") or request.form.get("image_data", "")
+
+        result = ScreenshotAnalyzer.analyze(image_data)
         return jsonify(result)
     except Exception as e:
         return jsonify({"status": "error", "error": str(e)}), 500
