@@ -4,7 +4,9 @@ A comprehensive stock prediction system covering stocks, crypto, commodities, fo
 
 ## Live Demo
 
-**[Click to Deploy to Render](https://render.com/deploy?repo=https://github.com/adeelumer581-jpg/Predictor)**
+**[Click to Deploy - No Config Needed](https://render.com/deploy?repo=https://github.com/adeelumer581-jpg/Predictor)**
+
+The render.yaml file will auto-configure everything!
 
 ## Features
 
