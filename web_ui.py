@@ -45,94 +45,6 @@ class WebUIManager:
 
 ui_manager = WebUIManager()
 
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/api/status')
-def api_status():
-    return jsonify(ui_manager.get_system_status())
-
-@app.route('/api/models')
-def api_models():
-    return jsonify({"models": ui_manager.get_available_models()})
-
-@app.route('/api/predict/<ticker>')
-def api_predict(ticker):
-    ticker = ticker.upper()
-    try:
-        sys.path.insert(0, BASE_DIR)
-        from stock_predictor import StockPredictor
-        predictor = StockPredictor(ticker)
-        model_path = os.path.join(BASE_DIR, f"{ticker}_model.pkl")
-        if os.path.exists(model_path):
-            predictor.load_model(model_path)
-        else:
-            predictor.fetch_data()
-            predictor.calculate_indicators(predictor.fetch_data())
-            predictor.train()
-        res = predictor.predict_next()
-        return jsonify(res)
-    except Exception as e:
-        logger.error(f"Predict error: {e}")
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/chart/<ticker>')
-def api_chart(ticker):
-    ticker = ticker.upper()
-    lookback = request.args.get('lookback_days', 100, type=int)
-    try:
-        sys.path.insert(0, BASE_DIR)
-        from apex_predictor import ApexPredictor
-        predictor = ApexPredictor(ticker)
-        df = predictor.fetch_data(period=f"{max(5, lookback)}d" if lookback <= 365 else "1y")
-        if df is None or df.empty:
-            return jsonify({"error": "No data"}), 404
-        data = []
-        for idx, row in df.iterrows():
-            data.append({
-                "time": int(idx.timestamp()),
-                "open": float(row['Open']), "high": float(row['High']),
-                "low": float(row['Low']), "close": float(row['Close'])
-            })
-        return jsonify(data)
-    except Exception as e:
-        logger.error(f"Chart error: {e}")
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/apex/predict/<ticker>')
-def api_apex_predict(ticker):
-    ticker = ticker.upper()
-    try:
-        sys.path.insert(0, BASE_DIR)
-        from apex_predictor import ApexPredictor
-        predictor = ApexPredictor(ticker)
-        result = predictor.predict()
-        return jsonify(result)
-    except Exception as e:
-        logger.error(f"APEX error: {e}")
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/apex/accuracy')
-def api_apex_accuracy():
-    path = os.path.join(BASE_DIR, "apex_accuracy.json")
-    if os.path.exists(path):
-        with open(path, 'r') as f:
-            return jsonify(json.load(f))
-    return jsonify({"total": 0, "correct": 0, "recent": [], "by_confidence": {}})
-
-@app.route('/api/apex/record_outcome', methods=['POST'])
-def api_apex_record_outcome():
-    data = request.json or {}
-    try:
-        sys.path.insert(0, BASE_DIR)
-        from apex_predictor import ApexPredictor
-        p = ApexPredictor(data.get('ticker', 'AAPL').upper())
-        p.record_outcome(data.get('was_correct', False), data.get('confidence_label', 'Medium'))
-        return jsonify({"status": "recorded"})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
 # ─── TEMPLATE ───
 
 def create_templates():
@@ -684,8 +596,97 @@ loadDashboard();
     with open(os.path.join(TEMPLATES_DIR, 'index.html'), 'w', encoding='utf-8') as f:
         f.write(html)
 
+create_templates()
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/api/status')
+def api_status():
+    return jsonify(ui_manager.get_system_status())
+
+@app.route('/api/models')
+def api_models():
+    return jsonify({"models": ui_manager.get_available_models()})
+
+@app.route('/api/predict/<ticker>')
+def api_predict(ticker):
+    ticker = ticker.upper()
+    try:
+        sys.path.insert(0, BASE_DIR)
+        from stock_predictor import StockPredictor
+        predictor = StockPredictor(ticker)
+        model_path = os.path.join(BASE_DIR, f"{ticker}_model.pkl")
+        if os.path.exists(model_path):
+            predictor.load_model(model_path)
+        else:
+            predictor.fetch_data()
+            predictor.calculate_indicators(predictor.fetch_data())
+            predictor.train()
+        res = predictor.predict_next()
+        return jsonify(res)
+    except Exception as e:
+        logger.error(f"Predict error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/chart/<ticker>')
+def api_chart(ticker):
+    ticker = ticker.upper()
+    lookback = request.args.get('lookback_days', 100, type=int)
+    try:
+        sys.path.insert(0, BASE_DIR)
+        from apex_predictor import ApexPredictor
+        predictor = ApexPredictor(ticker)
+        df = predictor.fetch_data(period=f"{max(5, lookback)}d" if lookback <= 365 else "1y")
+        if df is None or df.empty:
+            return jsonify({"error": "No data"}), 404
+        data = []
+        for idx, row in df.iterrows():
+            data.append({
+                "time": int(idx.timestamp()),
+                "open": float(row['Open']), "high": float(row['High']),
+                "low": float(row['Low']), "close": float(row['Close'])
+            })
+        return jsonify(data)
+    except Exception as e:
+        logger.error(f"Chart error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/apex/predict/<ticker>')
+def api_apex_predict(ticker):
+    ticker = ticker.upper()
+    try:
+        sys.path.insert(0, BASE_DIR)
+        from apex_predictor import ApexPredictor
+        predictor = ApexPredictor(ticker)
+        result = predictor.predict()
+        return jsonify(result)
+    except Exception as e:
+        logger.error(f"APEX error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/apex/accuracy')
+def api_apex_accuracy():
+    path = os.path.join(BASE_DIR, "apex_accuracy.json")
+    if os.path.exists(path):
+        with open(path, 'r') as f:
+            return jsonify(json.load(f))
+    return jsonify({"total": 0, "correct": 0, "recent": [], "by_confidence": {}})
+
+@app.route('/api/apex/record_outcome', methods=['POST'])
+def api_apex_record_outcome():
+    data = request.json or {}
+    try:
+        sys.path.insert(0, BASE_DIR)
+        from apex_predictor import ApexPredictor
+        p = ApexPredictor(data.get('ticker', 'AAPL').upper())
+        p.record_outcome(data.get('was_correct', False), data.get('confidence_label', 'Medium'))
+        return jsonify({"status": "recorded"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 def run_server(port=5000):
-    create_templates()
     print("\n" + "="*60)
     print("  APEX PREDICTOR — FULL SUITE")
     print("="*60)
