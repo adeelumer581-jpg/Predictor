@@ -1,0 +1,4 @@
+Public URL: https://6ba38a6bf372d08f-37-111-147-94.serveousercontent.com
+Deployed: Also pushed to GitHub at https://github.com/adeelumer581-jpg/Predictor
+- Deploy on Render for permanent URL: https://dashboard.render.com (connect Predictor repo)
+- Local: http://localhost:5000

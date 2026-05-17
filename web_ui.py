@@ -25,7 +25,8 @@ if os.path.exists(env_path):
 
 app = Flask(__name__, template_folder=TEMPLATES_DIR, static_folder='static')
 app.config['SECRET_KEY'] = 'apex-predictor-2026'
-socketio = SocketIO(app, cors_allowed_origins="*")
+async_mode = 'gevent' if os.environ.get('RENDER') else None
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode=async_mode)
 
 class WebUIManager:
     def __init__(self):
