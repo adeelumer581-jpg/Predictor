@@ -4,7 +4,3 @@ services:
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: python comprehensive_system.py
-    envVars:
-      - key: PORT
-        value: "5003"
-        sync: false
