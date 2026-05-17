@@ -1,0 +1,82 @@
+{
+  "training": [
+    {
+      "ticker": "AAPL",
+      "status": "success",
+      "time": 2.824596643447876,
+      "accuracy": 0.8373493975903614
+    },
+    {
+      "ticker": "MSFT",
+      "status": "success",
+      "time": 0.5651249885559082,
+      "accuracy": 0.8554216867469879
+    },
+    {
+      "ticker": "GOOGL",
+      "status": "success",
+      "time": 0.5777130126953125,
+      "accuracy": 0.9096385542168675
+    },
+    {
+      "ticker": "AMZN",
+      "status": "success",
+      "time": 0.6921992301940918,
+      "accuracy": 0.8975903614457831
+    },
+    {
+      "ticker": "TSLA",
+      "status": "success",
+      "time": 0.6361532211303711,
+      "accuracy": 0.927710843373494
+    },
+    {
+      "ticker": "NVDA",
+      "status": "success",
+      "time": 0.6225712299346924,
+      "accuracy": 0.9036144578313253
+    },
+    {
+      "ticker": "META",
+      "status": "success",
+      "time": 0.6653561592102051,
+      "accuracy": 0.8614457831325302
+    },
+    {
+      "ticker": "NFLX",
+      "status": "success",
+      "time": 0.8176472187042236,
+      "accuracy": 0.8614457831325302
+    },
+    {
+      "ticker": "AMD",
+      "status": "success",
+      "time": 0.650658130645752,
+      "accuracy": 0.8614457831325302
+    },
+    {
+      "ticker": "INTC",
+      "status": "success",
+      "time": 0.6653151512145996,
+      "accuracy": 0.8554216867469879
+    },
+    {
+      "ticker": "CRM",
+      "status": "success",
+      "time": 0.5878331661224365,
+      "accuracy": 0.8674698795180723
+    },
+    {
+      "ticker": "ADBE",
+      "status": "success",
+      "time": 0.5815849304199219,
+      "accuracy": 0.8855421686746988
+    }
+  ],
+  "stats": {
+    "cpu": 26.6,
+    "memory": 84.8,
+    "elapsed": "13.8s",
+    "metrics": []
+  }
+}

@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Predictor Pro - All Markets</title>
+    
+    <!-- PWA Installation Support -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Stock Predictor Pro">
+    <link rel="apple-touch-icon" href="/icon.svg">
+    <meta name="theme-color" content="#0f172a">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(180deg, #0f172a 0%, #1e3a5f 100%); }
+        .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        .live-dot { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #22c55e; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .up-arrow { color: #22c55e; }
+        .down-arrow { color: #ef4444; }
+        .tab-btn.active { background: rgba(34,197,94,0.18); border-color: rgba(34,197,94,0.45); }
+        .skeleton { background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.12), rgba(255,255,255,0.06)); background-size: 200% 100%; animation: shimmer 1.2s infinite; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen text-white">
+    <!-- Navigation -->
+    <nav class="glass sticky top-0 z-50 border-b border-gray-800/30">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-3 lg:flex-row lg:justify-between lg:items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-r from-green-400 to-blue-500 rounded-xl flex items-center justify-center">
+                    <span class="text-xl font-bold">SP</span>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold">Stock Predictor Pro</h1>
+                    <div class="flex items-center gap-1 text-xs text-green-400">
+                        <span class="live-dot w-2 h-2 bg-green-400 rounded-full"></span>
+                        <span>Live Trading</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+                <button onclick="switchTab('stocks')" class="px-4 py-2 rounded-lg glass hover:bg-white/10 transition tab-btn" data-tab="stocks">Stocks</button>
+                <button onclick="switchTab('crypto')" class="px-4 py-2 rounded-lg glass hover:bg-white/10 transition tab-btn" data-tab="crypto">Crypto</button>
+                <button onclick="switchTab('commodities')" class="px-4 py-2 rounded-lg glass hover:bg-white/10 transition tab-btn" data-tab="commodities">Commodities</button>
+                <button onclick="switchTab('forex')" class="px-4 py-2 rounded-lg glass hover:bg-white/10 transition tab-btn" data-tab="forex">Forex</button>
+                <button onclick="switchTab('pakistani')" class="px-4 py-2 rounded-lg glass hover:bg-white/10 transition tab-btn" data-tab="pakistani">Pakistan</button>
+                <button onclick="switchTab('news')" class="px-4 py-2 rounded-lg glass hover:bg-white/10 transition tab-btn" data-tab="news">News</button>
+                <button onclick="switchTab('analyze')" class="px-4 py-2 rounded-lg glass hover:bg-white/10 transition tab-btn" data-tab="analyze">Analyze</button>
+                <button onclick="switchTab('trading')" class="px-4 py-2 rounded-lg glass hover:bg-white/10 transition tab-btn text-yellow-400 border-yellow-500/30" data-tab="trading">Paper Trading</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <!-- Status Bar -->
+        <div class="glass rounded-xl p-4 mb-6 flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
+            <div class="grid grid-cols-3 sm:grid-cols-6 gap-4">
+                <div class="text-center">
+                    <div class="text-2xl font-bold" id="total-models">0</div>
+                    <div class="text-xs text-gray-400">Models</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold" id="total-predictions">0</div>
+                    <div class="text-xs text-gray-400">Predictions</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold" id="total-assets">0</div>
+                    <div class="text-xs text-gray-400">Assets</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold" id="memory-usage">0</div>
+                    <div class="text-xs text-gray-400">Memory MB</div>
+                </div>
+                <div class="text-center border-l border-gray-700/50 pl-2">
+                    <div class="text-2xl font-bold text-green-400" id="win-rate">65.0%</div>
+                    <div class="text-xs text-gray-400">Win Rate</div>
+                </div>
+                <div class="text-center border-l border-gray-700/50 pl-2">
+                    <div class="text-2xl font-bold text-blue-400" id="portfolio-val">$100,000</div>
+                    <div class="text-xs text-gray-400">Paper Equity</div>
+                </div>
+            </div>
+            <div class="flex items-center justify-between gap-4 md:text-right">
+                <button onclick="refreshCurrentTab()" id="refresh-btn" class="px-4 py-2 rounded-lg bg-green-500 hover:bg-green-600 font-bold text-sm">Refresh</button>
+                <div>
+                <div class="text-xs text-gray-400">Last Update</div>
+                <div class="text-sm" id="last-update">--:--:--</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stocks Tab -->
+        <div id="tab-stocks" class="tab-content">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="stocks-grid">
+                <!-- Loading state -->
+                <div class="col-span-full flex justify-center py-12">
+                    <div class="loader"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Crypto Tab -->
+        <div id="tab-crypto" class="tab-content hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="crypto-grid">
+                <div class="col-span-full flex justify-center py-12">
+                    <div class="loader"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Commodities Tab -->
+        <div id="tab-commodities" class="tab-content hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="commodities-grid">
+                <div class="col-span-full flex justify-center py-12">
+                    <div class="loader"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Forex Tab -->
+        <div id="tab-forex" class="tab-content hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="forex-grid">
+                <div class="col-span-full flex justify-center py-12">
+                    <div class="loader"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pakistani Tab -->
+        <div id="tab-pakistani" class="tab-content hidden">
+            <div class="glass rounded-xl p-4 mb-4">
+                <h3 class="text-lg font-bold mb-2">Pakistan Stock Exchange (KSE-100)</h3>
+                <p class="text-sm text-gray-400">Real-time predictions for Pakistani stocks</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="pakistani-grid">
+                <div class="col-span-full flex justify-center py-12">
+                    <div class="loader"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- News Tab -->
+        <div id="tab-news" class="tab-content hidden">
+            <div class="glass rounded-xl p-6">
+                <h3 class="text-lg font-bold mb-4">Market News</h3>
+                <div class="space-y-4" id="news-list">
+                    <!-- News items will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Analyze Tab -->
+        <div id="tab-analyze" class="tab-content hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass rounded-xl p-6">
+                    <h3 class="text-lg font-bold mb-4">Screenshot Analysis</h3>
+                    <div class="border-2 border-dashed border-gray-600 rounded-xl p-8 text-center">
+                        <input type="file" id="screenshot-input" accept="image/*" class="hidden" onchange="handleScreenshot(this)">
+                        <label for="screenshot-input" class="cursor-pointer">
+                            <div class="text-4xl mb-3">UPLOAD</div>
+                            <div class="text-gray-400">Drop chart screenshot here or click to upload</div>
+                        </label>
+                    </div>
+                    <div id="screenshot-loading" class="mt-4 hidden text-center">
+                        <div class="loader mx-auto mb-2"></div>
+                        <div class="text-gray-400">Analyzing chart...</div>
+                    </div>
+                    <div id="screenshot-result" class="mt-4 hidden">
+                        <div class="glass rounded-lg p-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-gray-400">Pattern</span>
+                                <span class="font-bold text-yellow-400" id="pattern-result">--</span>
+                            </div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-gray-400">Trend</span>
+                                <span class="font-bold" id="trend-result">--</span>
+                            </div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-gray-400">Signal</span>
+                                <span class="font-bold text-xl" id="signal-result">--</span>
+                            </div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-gray-400">Confidence</span>
+                                <span class="font-bold text-green-400" id="confidence-result">--</span>
+                            </div>
+                            <div class="border-t border-gray-700 mt-2 pt-2">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-gray-500 text-sm">RSI</span>
+                                    <span class="text-sm" id="rsi-result">--</span>
+                                </div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-gray-500 text-sm">MACD</span>
+                                    <span class="text-sm" id="macd-result">--</span>
+                                </div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-gray-500 text-sm">Support</span>
+                                    <span class="text-sm" id="support-result">--</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-500 text-sm">Resistance</span>
+                                    <span class="text-sm" id="resistance-result">--</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass rounded-xl p-6">
+                    <h3 class="text-lg font-bold mb-4">Quick Predict</h3>
+                    <div class="flex gap-2 mb-4">
+                        <input type="text" id="ticker-input" placeholder="Enter ticker (e.g., AAPL, BTC-USD)" class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2">
+                        <button onclick="quickPredict()" id="predict-button" class="bg-green-500 hover:bg-green-600 px-6 py-2 rounded-lg font-bold">Predict</button>
+                    </div>
+                    <div id="quick-message" class="hidden mb-4 text-sm"></div>
+                    <div id="quick-result" class="hidden">
+                        <div class="glass rounded-lg p-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <span>Ticker</span>
+                                <span class="font-bold" id="qr-ticker">--</span>
+                            </div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span>Prediction</span>
+                                <span class="font-bold text-xl" id="qr-prediction">--</span>
+                            </div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span>Confidence</span>
+                                <span class="font-bold" id="qr-confidence">--</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>Current Price</span>
+                                <span class="font-bold" id="qr-price">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trading/Paper Portfolio Tab -->
+    <div id="tab-trading" class="tab-content hidden fade-in max-w-7xl mx-auto px-4 py-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Portfolio Stats and Equity Curve -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div class="glass rounded-xl p-4 text-center">
+                        <div class="text-sm text-gray-400">Total Account Value</div>
+                        <div class="text-2xl font-bold text-blue-400 mt-1" id="trading-equity">$100,000.00</div>
+                    </div>
+                    <div class="glass rounded-xl p-4 text-center">
+                        <div class="text-sm text-gray-400">Available Cash</div>
+                        <div class="text-2xl font-bold text-gray-200 mt-1" id="trading-cash">$100,000.00</div>
+                    </div>
+                    <div class="glass rounded-xl p-4 text-center">
+                        <div class="text-sm text-gray-400">Open Positions P&L</div>
+                        <div class="text-2xl font-bold mt-1" id="trading-unrealized-pnl">$0.00</div>
+                    </div>
+                    <div class="glass rounded-xl p-4 text-center">
+                        <div class="text-sm text-gray-400">Total Return</div>
+                        <div class="text-2xl font-bold text-green-400 mt-1" id="trading-return">0.00%</div>
+                    </div>
+                </div>
+
+                <!-- Equity Curve Line Chart -->
+                <div class="glass rounded-xl p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold">Portfolio Performance (Equity Curve)</h3>
+                        <button onclick="resetPortfolio()" class="px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs rounded border border-red-500/30 font-bold transition">Reset Portfolio</button>
+                    </div>
+                    <div class="h-64 relative">
+                        <canvas id="equityCurveChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Open Positions Table -->
+                <div class="glass rounded-xl p-6">
+                    <h3 class="text-lg font-bold mb-4">Active Open Positions</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead>
+                                <tr class="border-b border-gray-800 text-gray-400">
+                                    <th class="py-2">Asset</th>
+                                    <th class="py-2">Type</th>
+                                    <th class="py-2">Qty</th>
+                                    <th class="py-2">Entry Price</th>
+                                    <th class="py-2">Current Price</th>
+                                    <th class="py-2">Stop Loss</th>
+                                    <th class="py-2">Take Profit</th>
+                                    <th class="py-2">Unrealized P&L</th>
+                                    <th class="py-2 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="positions-list" class="divide-y divide-gray-800/40">
+                                <tr>
+                                    <td colspan="9" class="py-8 text-center text-gray-500">No active positions open. Use the order entry form to start trading.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Entry Form and Robo Advisor settings -->
+            <div class="space-y-6">
+                <div class="glass rounded-xl p-6">
+                    <h3 class="text-lg font-bold mb-4">DNA-01 Order Desk</h3>
+                    
+                    <div class="space-y-4">
+                        <!-- Order Type Selector -->
+                        <div class="flex gap-2">
+                            <button onclick="setOrderAction('BUY')" id="action-buy-btn" class="flex-1 py-2 rounded-lg bg-green-500 text-black font-bold border border-green-400">BUY</button>
+                            <button onclick="setOrderAction('SELL')" id="action-sell-btn" class="flex-1 py-2 rounded-lg bg-transparent text-gray-400 hover:bg-white/5 border border-gray-800">SELL</button>
+                        </div>
+
+                        <div>
+                            <label class="text-xs text-gray-400 block mb-1">Asset Ticker</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="order-ticker" placeholder="e.g. AAPL or BTC-USD" onchange="fetchOrderDeskPrice()" class="flex-1 bg-gray-800/60 border border-gray-700 rounded-lg px-4 py-2 text-white font-bold uppercase">
+                                <button onclick="fetchOrderDeskPrice()" class="px-3 bg-white/10 hover:bg-white/15 rounded-lg border border-gray-700 text-xs">Verify</button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-xs text-gray-400 block mb-1">Market Price</label>
+                                <input type="text" id="order-price" readonly placeholder="--" class="w-full bg-gray-900 border border-gray-800 text-gray-400 rounded-lg px-4 py-2 font-bold cursor-not-allowed">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-400 block mb-1">Quantity</label>
+                                <input type="number" id="order-qty" min="1" placeholder="100" class="w-full bg-gray-800/60 border border-gray-700 rounded-lg px-4 py-2 text-white font-bold">
+                            </div>
+                        </div>
+
+                        <!-- DNA-01 Risk Helper Card -->
+                        <div class="p-3 bg-green-500/10 border border-green-500/20 rounded-lg text-xs space-y-1">
+                            <div class="font-bold text-green-400">🛡️ DNA-01 Risk Guidelines Check</div>
+                            <div class="text-gray-300">1% Max Account Risk Limit: <span id="risk-size-recommendation" class="font-bold text-white">--</span></div>
+                            <div class="text-gray-300">2:1 Reward Risk Bracket: <span id="risk-bracket-recommendation" class="font-bold text-white">--</span></div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-xs text-gray-400 block mb-1">Stop Loss (SL)</label>
+                                <input type="number" step="0.01" id="order-sl" placeholder="Auto-Calculated" class="w-full bg-gray-800/60 border border-gray-700 rounded-lg px-3 py-2 text-white font-bold text-sm">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-400 block mb-1">Take Profit (TP)</label>
+                                <input type="number" step="0.01" id="order-tp" placeholder="Auto-Calculated" class="w-full bg-gray-800/60 border border-gray-700 rounded-lg px-3 py-2 text-white font-bold text-sm">
+                            </div>
+                        </div>
+
+                        <button onclick="placePaperTrade()" class="w-full py-3 rounded-xl bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-center mt-2 transition" id="submit-order-btn">Submit Market Order</button>
+                    </div>
+                </div>
+
+                <!-- AI Robo Advisor Auto Trading config -->
+                <div class="glass rounded-xl p-6 border border-yellow-500/20">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h3 class="text-lg font-bold text-yellow-400 flex items-center gap-2">🤖 AI Robo-Advisor</h3>
+                            <div class="text-xs text-gray-400 mt-1">Autonomous high-frequency order runner</div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="auto-trade-toggle" onchange="toggleAutoTrading()" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                        </label>
+                    </div>
+                    <div class="text-xs text-gray-300 leading-relaxed bg-black/25 p-3 rounded-lg border border-gray-800">
+                        When active, the AI continuously scans updates for Global Stocks and Cryptos. If prediction confidence and confluence scores both exceed **80%**, it executes orders automatically under DNA-01 rules (1% account risk size, 2:1 ATR brackets).
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize
+        const socket = io({transports: ['polling']});
+        const tabCache = {};
+        const cacheMs = 60000;
+        const endpoints = {
+            stocks: '/api/stocks?limit=12',
+            crypto: '/api/crypto?limit=9',
+            commodities: '/api/commodities?limit=9',
+            forex: '/api/forex',
+            pakistani: '/api/pakistani',
+            news: '/api/news'
+        };
+        let currentTab = 'stocks';
+
+        function setActiveTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tab === tab);
+            });
+        }
+
+        function refreshCurrentTab() {
+            if (currentTab === 'analyze') {
+                updateStatus();
+                return;
+            }
+            loadData(currentTab, true);
+            updateStatus();
+        }
+
+        async function fetchJson(url, options = {}, timeoutMs = 22000) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+                const response = await fetch(url, {...options, signal: controller.signal});
+                if (!response.ok) throw new Error('Request failed: ' + response.status);
+                return await response.json();
+            } finally {
+                clearTimeout(timer);
+            }
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, char => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[char]));
+        }
+
+        function renderLoading(grid) {
+            grid.innerHTML = Array.from({length: 6}).map(() => `
+                <div class="glass rounded-xl p-4">
+                    <div class="h-5 w-24 skeleton rounded mb-4"></div>
+                    <div class="h-8 w-32 skeleton rounded mb-5"></div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="h-4 skeleton rounded"></div>
+                        <div class="h-4 skeleton rounded"></div>
+                        <div class="h-4 skeleton rounded"></div>
+                        <div class="h-4 skeleton rounded"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getItems(tab, data) {
+            if (tab === 'stocks') return data.stocks || [];
+            if (tab === 'crypto') return data.crypto || [];
+            if (tab === 'commodities') return data.commodities || [];
+            if (tab === 'forex') return data.forex || [];
+            if (tab === 'pakistani') return data.stocks || [];
+            return [];
+        }
+
+        // Tab switching
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tab).classList.remove('hidden');
+            currentTab = tab;
+            setActiveTab(tab);
+            if (tab === 'trading') {
+                loadPortfolioData();
+            } else if (tab !== 'analyze') {
+                loadData(tab);
+            }
+        }
+
+        // Load data based on tab
+        async function loadData(tab, force = false) {
+            if (tab === 'news') {
+                loadNews(force);
+                return;
+            }
+
+            const grid = document.getElementById(tab + '-grid');
+            if (!grid) return;
+            const cached = tabCache[tab];
+            if (!force && cached && Date.now() - cached.time < cacheMs) {
+                renderCards(tab, cached.items, grid, true);
+                return;
+            }
+
+            renderLoading(grid);
+            document.getElementById('refresh-btn').disabled = true;
+            try {
+                const data = await fetchJson(endpoints[tab]);
+                const items = getItems(tab, data);
+                tabCache[tab] = {items, time: Date.now()};
+                renderCards(tab, items, grid);
+            } catch (e) {
+                if (cached) {
+                    renderCards(tab, cached.items, grid, true, 'Using the last successful update.');
+                } else {
+                    grid.innerHTML = '<div class="col-span-full text-center text-red-400">Data provider is slow right now. Try Refresh.</div>';
+                }
+            } finally {
+                document.getElementById('refresh-btn').disabled = false;
+            }
+        }
+
+        // Render cards
+        function renderCards(tab, items, grid) {
+            if (!items || items.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center text-gray-400">No data available</div>';
+                return;
+            }
+
+            grid.innerHTML = items.map(item => {
+                const isUp = item.prediction === 'UP' || item.change_1d > 0;
+                const arrow = isUp ? '▲' : '▼';
+                const color = isUp ? 'text-green-400' : 'text-red-400';
+                const signalColor = item.prediction === 'UP' ? 'bg-green-500' : 'bg-red-500';
+
+                return `
+                <div class="glass rounded-xl p-4 fade-in">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h3 class="text-lg font-bold">${item.ticker}</h3>
+                            <div class="text-2xl font-bold">${item.current_price || 'N/A'}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs text-gray-400">Signal</div>
+                            <div class="${signalColor} px-3 py-1 rounded-full text-sm font-bold">
+                                ${item.prediction || 'WAIT'}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Change</span>
+                            <span class="${color}">${arrow} ${item.change_1d?.toFixed(2) || 0}%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Confidence</span>
+                            <span>${((item.confidence || 0) * 100).toFixed(0)}%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">RSI</span>
+                            <span>${item.rsi || 'N/A'}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Trend</span>
+                            <span class="${item.trend === 'UPTREND' ? 'text-green-400' : 'text-red-400'}">${item.trend || 'N/A'}</span>
+                        </div>
+                    </div>
+                    ${item.patterns?.length ? '<div class="mt-2 text-xs text-gray-500">Patterns: ' + item.patterns.join(', ') + '</div>' : ''}
+                </div>
+                `;
+            }).join('');
+        }
+
+        // Load news
+        async function loadNews() {
+            try {
+                const response = await fetch('/api/news');
+                const data = await response.json();
+                const newsList = document.getElementById('news-list');
+                newsList.innerHTML = data.news.map(item => `
+                    <div class="flex gap-4 p-3 glass rounded-lg">
+                        <div class="flex-1">
+                            <h4 class="font-bold">${item.title}</h4>
+                            <div class="text-xs text-gray-400 mt-1">${item.source} • ${item.time}</div>
+                        </div>
+                        <div class="px-3 py-1 rounded text-xs ${item.sentiment === 'positive' ? 'bg-green-500/20 text-green-400' : item.sentiment === 'negative' ? 'bg-red-500/20 text-red-400' : 'bg-gray-500/20 text-gray-400'}">
+                            ${item.sentiment}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                document.getElementById('news-list').innerHTML = '<div class="text-center text-red-400">Error loading news</div>';
+            }
+        }
+
+        // Screenshot analysis
+        async function handleScreenshot(input) {
+            if (input.files && input.files[0]) {
+                const formData = new FormData();
+                formData.append('image', input.files[0]);
+
+                document.getElementById('screenshot-result').classList.add('hidden');
+                document.getElementById('screenshot-loading').classList.remove('hidden');
+
+                try {
+                    const response = await fetch('/api/analyze/screenshot', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await response.json();
+
+                    document.getElementById('pattern-result').textContent = data.pattern || 'N/A';
+                    document.getElementById('trend-result').textContent = data.trend || 'N/A';
+                    document.getElementById('trend-result').className = 'font-bold ' + (data.trend === 'UPTREND' ? 'text-green-400' : data.trend === 'DOWNTREND' ? 'text-red-400' : 'text-yellow-400');
+                    document.getElementById('signal-result').textContent = data.signal || 'N/A';
+                    document.getElementById('signal-result').className = 'font-bold text-xl ' + (data.signal === 'BUY' ? 'text-green-400' : data.signal === 'SELL' ? 'text-red-400' : 'text-yellow-400');
+                    document.getElementById('confidence-result').textContent = ((data.confidence || 0) * 100).toFixed(0) + '%';
+                    if (data.indicators) {
+                        document.getElementById('rsi-result').textContent = data.indicators.rsi ?? '--';
+                        document.getElementById('macd-result').textContent = data.indicators.macd ?? '--';
+                        document.getElementById('support-result').textContent = data.indicators.support ? '$' + data.indicators.support : '--';
+                        document.getElementById('resistance-result').textContent = data.indicators.resistance ? '$' + data.indicators.resistance : '--';
+                    }
+                    // Show AI analysis text if available
+                    const analysisEl = document.getElementById('ai-analysis-text');
+                    const keyLevelsEl = document.getElementById('ai-key-levels');
+                    const poweredByEl = document.getElementById('ai-powered-by');
+                    if (analysisEl) analysisEl.textContent = data.analysis || data.pattern_description || '';
+                    if (keyLevelsEl) keyLevelsEl.textContent = data.key_levels || '';
+                    if (poweredByEl) poweredByEl.textContent = data.powered_by || '';
+                    document.getElementById('screenshot-result').classList.remove('hidden');
+                } catch (e) {
+                    alert('Error analyzing screenshot. Please try again.');
+                } finally {
+                    document.getElementById('screenshot-loading').classList.add('hidden');
+                }
+            }
+        }
+
+        // Quick predict
+        async function quickPredict() {
+            const ticker = document.getElementById('ticker-input').value.toUpperCase();
+            if (!ticker) return;
+
+            try {
+                const response = await fetch('/api/predict/' + ticker);
+                const data = await response.json();
+
+                if (data.prediction) {
+                    document.getElementById('qr-ticker').textContent = data.ticker;
+                    document.getElementById('qr-prediction').textContent = data.prediction;
+                    document.getElementById('qr-prediction').className = 'font-bold text-xl ' + (data.prediction === 'UP' ? 'text-green-400' : 'text-red-400');
+                    document.getElementById('qr-confidence').textContent = (data.confidence * 100).toFixed(0) + '%';
+                    document.getElementById('qr-price').textContent = data.current_price;
+                    document.getElementById('quick-result').classList.remove('hidden');
+                } else {
+                    alert('Could not get prediction for ' + ticker);
+                }
+            } catch (e) {
+                alert('Error getting prediction');
+            }
+        }
+
+        // Update status
+        async function updateStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                document.getElementById('total-models').textContent = data.models_loaded;
+                document.getElementById('total-predictions').textContent = data.predictions_made;
+                document.getElementById('total-assets').textContent = data.assets_tracked;
+                document.getElementById('memory-usage').textContent = Math.round(data.memory_mb);
+                if (data.win_rate !== undefined) document.getElementById('win-rate').textContent = data.win_rate + '%';
+                if (data.portfolio_value !== undefined) document.getElementById('portfolio-val').textContent = '$' + data.portfolio_value.toLocaleString();
+                document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+            } catch (e) {}
+        }
+
+        function renderCards(tab, items, grid, fromCache = false, message = '') {
+            if (!items || items.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center text-gray-400">No data available yet. Try Refresh.</div>';
+                return;
+            }
+
+            const notice = (fromCache || message) ? `
+                <div class="col-span-full text-xs text-gray-400 mb-1">
+                    ${message || 'Showing recently loaded data.'}
+                </div>
+            ` : '';
+
+            grid.innerHTML = notice + items.map(item => {
+                const change = Number(item.change_1d || 0);
+                const confidence = Number(item.confidence || 0);
+                const isUp = item.prediction === 'UP' || change > 0;
+                const color = isUp ? 'text-green-400' : 'text-red-400';
+                const signalColor = item.prediction === 'UP' ? 'bg-green-500' : item.prediction === 'DOWN' ? 'bg-red-500' : 'bg-gray-500';
+                const price = Number(item.current_price);
+                const modelSource = item.model_source === 'technical_signal' ? 'technical' : 'model';
+
+                return `
+                <div class="glass rounded-xl p-4 fade-in">
+                    <div class="flex justify-between items-start gap-3 mb-3">
+                        <div class="min-w-0">
+                            <h3 class="text-lg font-bold truncate">${escapeHtml(item.ticker)}</h3>
+                            <div class="text-2xl font-bold">${Number.isFinite(price) ? price.toLocaleString(undefined, {maximumFractionDigits: 2}) : 'N/A'}</div>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <div class="text-xs text-gray-400">Signal</div>
+                            <div class="${signalColor} px-3 py-1 rounded-full text-sm font-bold">${escapeHtml(item.prediction || 'WAIT')}</div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <div class="flex justify-between gap-2">
+                            <span class="text-gray-400">Change</span>
+                            <span class="${color}">${change >= 0 ? '+' : ''}${change.toFixed(2)}%</span>
+                        </div>
+                        <div class="flex justify-between gap-2">
+                            <span class="text-gray-400">Confidence</span>
+                            <span>${(confidence * 100).toFixed(0)}%</span>
+                        </div>
+                        <div class="flex justify-between gap-2">
+                            <span class="text-gray-400">RSI</span>
+                            <span>${item.rsi ?? 'N/A'}</span>
+                        </div>
+                        <div class="flex justify-between gap-2">
+                            <span class="text-gray-400">Trend</span>
+                            <span class="${item.trend === 'UPTREND' ? 'text-green-400' : 'text-red-400'}">${escapeHtml(item.trend || 'N/A')}</span>
+                        </div>
+                    </div>
+                    <div class="mt-3 flex justify-between text-xs text-gray-500">
+                        <span>${escapeHtml(modelSource)}</span>
+                        <span>${item.cache === 'hit' ? 'cached' : (item.processing_time_ms || 0) + ' ms'}</span>
+                    </div>
+                    ${item.patterns?.length ? '<div class="mt-2 text-xs text-gray-500">Patterns: ' + item.patterns.map(escapeHtml).join(', ') + '</div>' : ''}
+                </div>
+                `;
+            }).join('');
+        }
+
+        async function loadNews(force = false) {
+            const newsList = document.getElementById('news-list');
+            const cached = tabCache.news;
+            if (!force && cached && Date.now() - cached.time < cacheMs) {
+                renderNews(cached.items);
+                return;
+            }
+
+            newsList.innerHTML = '<div class="flex justify-center py-8"><div class="loader"></div></div>';
+            try {
+                const data = await fetchJson('/api/news', {}, 10000);
+                const items = data.news || [];
+                tabCache.news = {items, time: Date.now()};
+                renderNews(items);
+            } catch (e) {
+                newsList.innerHTML = '<div class="text-center text-red-400">Error loading news</div>';
+            }
+        }
+
+        function renderNews(items) {
+            const newsList = document.getElementById('news-list');
+            newsList.innerHTML = items.map(item => `
+                <div class="flex gap-4 p-3 glass rounded-lg">
+                    <div class="flex-1">
+                        <h4 class="font-bold">${escapeHtml(item.title)}</h4>
+                        <div class="text-xs text-gray-400 mt-1">${escapeHtml(item.source)} &bull; ${escapeHtml(item.time)}</div>
+                    </div>
+                    <div class="px-3 py-1 rounded text-xs ${item.sentiment === 'positive' ? 'bg-green-500/20 text-green-400' : item.sentiment === 'negative' ? 'bg-red-500/20 text-red-400' : 'bg-gray-500/20 text-gray-400'}">
+                        ${escapeHtml(item.sentiment)}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function handleScreenshot(input) {
+            if (!input.files || !input.files[0]) return;
+
+            const formData = new FormData();
+            formData.append('image', input.files[0]);
+            document.getElementById('screenshot-result').classList.add('hidden');
+            document.getElementById('screenshot-loading').classList.remove('hidden');
+
+            try {
+                const response = await fetch('/api/analyze/screenshot', { method: 'POST', body: formData });
+                const data = await response.json();
+                document.getElementById('pattern-result').textContent = data.pattern || 'N/A';
+                document.getElementById('trend-result').textContent = data.trend || 'N/A';
+                document.getElementById('trend-result').className = 'font-bold ' + (data.trend === 'UPTREND' ? 'text-green-400' : data.trend === 'DOWNTREND' ? 'text-red-400' : 'text-yellow-400');
+                document.getElementById('signal-result').textContent = data.signal || 'N/A';
+                document.getElementById('signal-result').className = 'font-bold text-xl ' + (data.signal === 'BUY' ? 'text-green-400' : data.signal === 'SELL' ? 'text-red-400' : 'text-yellow-400');
+                document.getElementById('confidence-result').textContent = ((data.confidence || 0) * 100).toFixed(0) + '%';
+                if (data.indicators) {
+                    document.getElementById('rsi-result').textContent = data.indicators.rsi ?? '--';
+                    document.getElementById('macd-result').textContent = data.indicators.macd ?? '--';
+                    document.getElementById('support-result').textContent = data.indicators.support ? '$' + data.indicators.support : '--';
+                    document.getElementById('resistance-result').textContent = data.indicators.resistance ? '$' + data.indicators.resistance : '--';
+                }
+                const analysisEl = document.getElementById('ai-analysis-text');
+                const keyLevelsEl = document.getElementById('ai-key-levels');
+                const poweredByEl = document.getElementById('ai-powered-by');
+                if (analysisEl) analysisEl.textContent = data.analysis || data.pattern_description || '';
+                if (keyLevelsEl) keyLevelsEl.textContent = data.key_levels || '';
+                if (poweredByEl) poweredByEl.textContent = data.powered_by || '';
+                document.getElementById('screenshot-result').classList.remove('hidden');
+            } catch (e) {
+                alert('Error analyzing screenshot. Please try again.');
+            } finally {
+                document.getElementById('screenshot-loading').classList.add('hidden');
+            }
+        }
+
+        async function quickPredict() {
+            const tickerInput = document.getElementById('ticker-input');
+            const ticker = tickerInput.value.trim().toUpperCase();
+            const message = document.getElementById('quick-message');
+            const button = document.getElementById('predict-button');
+            if (!ticker) {
+                message.textContent = 'Enter a ticker first.';
+                message.className = 'mb-4 text-sm text-yellow-400';
+                return;
+            }
+
+            button.disabled = true;
+            button.textContent = 'Loading';
+            message.textContent = 'Getting latest market data...';
+            message.className = 'mb-4 text-sm text-gray-400';
+            document.getElementById('quick-result').classList.add('hidden');
+
+            try {
+                const data = await fetchJson('/api/predict/' + encodeURIComponent(ticker), {}, 25000);
+                if (!data.prediction) throw new Error(data.error || 'Prediction unavailable');
+
+                document.getElementById('qr-ticker').textContent = data.ticker;
+                document.getElementById('qr-prediction').textContent = data.prediction;
+                document.getElementById('qr-prediction').className = 'font-bold text-xl ' + (data.prediction === 'UP' ? 'text-green-400' : 'text-red-400');
+                document.getElementById('qr-confidence').textContent = (Number(data.confidence || 0) * 100).toFixed(0) + '%';
+                document.getElementById('qr-price').textContent = data.current_price ?? 'N/A';
+                document.getElementById('quick-result').classList.remove('hidden');
+                message.textContent = data.model_source === 'technical_signal' ? 'Used technical signal fallback.' : 'Prediction loaded.';
+                message.className = 'mb-4 text-sm text-green-400';
+            } catch (e) {
+                message.textContent = e.name === 'AbortError' ? 'The data provider timed out. Try again.' : e.message;
+                message.className = 'mb-4 text-sm text-red-400';
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Predict';
+            }
+        }
+
+        async function updateStatus() {
+            try {
+                const data = await fetchJson('/api/status', {}, 8000);
+                document.getElementById('total-models').textContent = data.models_loaded ?? 0;
+                document.getElementById('total-predictions').textContent = data.predictions_made ?? 0;
+                document.getElementById('total-assets').textContent = data.assets_tracked ?? 0;
+                document.getElementById('memory-usage').textContent = Math.round(data.memory_mb || 0);
+                document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+            } catch (e) {}
+        }
+
+        // Socket updates
+        socket.on('prediction_update', function(data) {
+            if (!tabCache.stocks || currentTab !== 'stocks') return;
+            const items = tabCache.stocks.items || [];
+            const index = items.findIndex(item => item.ticker === data.ticker);
+            if (index >= 0) items[index] = data;
+        });
+
+        // Upgraded Paper Trading & DNA-01 Order desk logic
+        let orderAction = 'BUY';
+        let equityChart = null;
+
+        function setOrderAction(action) {
+            orderAction = action;
+            const buyBtn = document.getElementById('action-buy-btn');
+            const sellBtn = document.getElementById('action-sell-btn');
+            
+            if (action === 'BUY') {
+                buyBtn.className = "flex-1 py-2 rounded-lg bg-green-500 text-black font-bold border border-green-400";
+                sellBtn.className = "flex-1 py-2 rounded-lg bg-transparent text-gray-400 hover:bg-white/5 border border-gray-800";
+                document.getElementById('submit-order-btn').className = "w-full py-3 rounded-xl bg-green-500 hover:bg-green-600 text-black font-bold text-center mt-2 transition";
+                document.getElementById('submit-order-btn').textContent = "Submit BUY Order";
+            } else {
+                buyBtn.className = "flex-1 py-2 rounded-lg bg-transparent text-gray-400 hover:bg-white/5 border border-gray-800";
+                sellBtn.className = "flex-1 py-2 rounded-lg bg-red-500 text-black font-bold border border-red-400";
+                document.getElementById('submit-order-btn').className = "w-full py-3 rounded-xl bg-red-500 hover:bg-red-600 text-black font-bold text-center mt-2 transition";
+                document.getElementById('submit-order-btn').textContent = "Submit SELL Order";
+            }
+            fetchOrderDeskPrice();
+        }
+
+        async function fetchOrderDeskPrice() {
+            const ticker = document.getElementById('order-ticker').value.toUpperCase().trim();
+            if (!ticker) return;
+
+            try {
+                const res = await fetchJson(`/api/predict/${ticker}`);
+                if (res.status === 'success' && res.current_price) {
+                    const price = parseFloat(res.current_price);
+                    document.getElementById('order-price').value = price.toFixed(2);
+                    
+                    // Fetch total equity from portfolio state or default to $100k
+                    const portRes = await fetchJson('/api/portfolio');
+                    const equity = portRes.equity || 100000.0;
+                    
+                    // Calculate DNA-01 Brackets (3% ATR estimate)
+                    const atr = price * 0.03;
+                    const stopLoss = orderAction === 'BUY' ? (price - atr) : (price + atr);
+                    const takeProfit = orderAction === 'BUY' ? (price + atr * 2.0) : (price - atr * 2.0);
+                    
+                    document.getElementById('order-sl').value = stopLoss.toFixed(2);
+                    document.getElementById('order-tp').value = takeProfit.toFixed(2);
+                    
+                    // DNA-01 1% position sizing recommendation
+                    const maxRisk = equity * 0.01;
+                    const stopLossDistance = Math.abs(price - stopLoss);
+                    const recommendedQty = Math.floor(maxRisk / stopLossDistance);
+                    
+                    document.getElementById('risk-size-recommendation').textContent = `${recommendedQty} Shares (Risktol: $${maxRisk.toFixed(0)})`;
+                    document.getElementById('risk-bracket-recommendation').textContent = `SL: ${stopLoss.toFixed(2)} | TP: ${takeProfit.toFixed(2)} (2:1 Ratio)`;
+                    
+                    if (!document.getElementById('order-qty').value) {
+                        document.getElementById('order-qty').value = recommendedQty;
+                    }
+                }
+            } catch (e) {
+                console.error("Error fetching order price:", e);
+            }
+        }
+
+        async function placePaperTrade() {
+            const ticker = document.getElementById('order-ticker').value.toUpperCase().trim();
+            const qty = parseInt(document.getElementById('order-qty').value);
+            const stopLoss = parseFloat(document.getElementById('order-sl').value);
+            const takeProfit = parseFloat(document.getElementById('order-tp').value);
+
+            if (!ticker || isNaN(qty) || qty <= 0) {
+                alert('Please enter a valid ticker and quantity.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/portfolio/trade', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ticker,
+                        action: orderAction,
+                        qty,
+                        stop_loss: stopLoss,
+                        take_profit: takeProfit
+                    })
+                });
+                const res = await response.json();
+                if (res.status === 'success') {
+                    alert(res.message);
+                    loadPortfolioData();
+                    updateStatus();
+                } else {
+                    alert('Order Rejected: ' + res.message);
+                }
+            } catch (e) {
+                alert('Error placing virtual order');
+            }
+        }
+
+        async function closePosition(ticker, shares) {
+            if (!confirm(`Are you sure you want to close your position in ${ticker}?`)) return;
+            try {
+                const response = await fetch('/api/portfolio/trade', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ticker,
+                        action: 'SELL',
+                        qty: shares
+                    })
+                });
+                const res = await response.json();
+                if (res.status === 'success') {
+                    alert(res.message);
+                    loadPortfolioData();
+                    updateStatus();
+                } else {
+                    alert('Close Position Failed: ' + res.message);
+                }
+            } catch (e) {
+                alert('Error closing position');
+            }
+        }
+
+        async function resetPortfolio() {
+            if (!confirm('Are you sure you want to completely reset your virtual cash to $100,000.00? This clears active positions.')) return;
+            try {
+                const res = await fetchJson('/api/portfolio/reset', { method: 'POST' });
+                alert(res.message);
+                loadPortfolioData();
+                updateStatus();
+            } catch (e) {
+                alert('Reset failed');
+            }
+        }
+
+        async function toggleAutoTrading() {
+            const checked = document.getElementById('auto-trade-toggle').checked;
+            try {
+                const res = await fetch('/api/portfolio/auto_trade', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ enabled: checked })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    alert(checked ? 'AI Robo-Advisor ACTIVATED! Enforcing DNA-01 rules autonomously.' : 'AI Robo-Advisor DEACTIVATED.');
+                }
+            } catch (e) {
+                alert('Error updating Robo-Advisor state');
+            }
+        }
+
+        async function loadPortfolioData() {
+            try {
+                const data = await fetchJson('/api/portfolio');
+                
+                // Set stats
+                document.getElementById('trading-equity').textContent = '$' + data.equity.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('trading-cash').textContent = '$' + data.cash.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                const pnl = data.unrealized_pnl;
+                const pnlEl = document.getElementById('trading-unrealized-pnl');
+                pnlEl.textContent = (pnl >= 0 ? '+' : '') + '$' + pnl.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                pnlEl.className = `text-2xl font-bold mt-1 ${pnl >= 0 ? 'text-green-400' : 'text-red-400'}`;
+                
+                const ret = data.total_return;
+                const retEl = document.getElementById('trading-return');
+                retEl.textContent = (ret >= 0 ? '+' : '') + ret.toFixed(2) + '%';
+                retEl.className = `text-2xl font-bold mt-1 ${ret >= 0 ? 'text-green-400' : 'text-red-400'}`;
+                
+                document.getElementById('auto-trade-toggle').checked = data.auto_trade_enabled;
+
+                // Render positions
+                const tbody = document.getElementById('positions-list');
+                if (!data.positions || data.positions.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="9" class="py-8 text-center text-gray-500">No active positions open. Use the order entry form to start trading.</td>
+                        </tr>
+                    `;
+                } else {
+                    tbody.innerHTML = data.positions.map(p => {
+                        const pnlColor = p.pnl >= 0 ? 'text-green-400' : 'text-red-400';
+                        return `
+                            <tr class="border-b border-gray-800/40 hover:bg-white/5 transition">
+                                <td class="py-3 font-bold">${p.ticker}</td>
+                                <td class="py-3"><span class="px-2 py-0.5 rounded text-xs font-bold ${p.type === 'BUY' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}">${p.type}</span></td>
+                                <td class="py-3">${p.shares}</td>
+                                <td class="py-3 font-mono">$${p.entry_price.toFixed(2)}</td>
+                                <td class="py-3 font-mono">$${p.current_price.toFixed(2)}</td>
+                                <td class="py-3 text-red-400/90 font-mono">$${p.stop_loss.toFixed(2)}</td>
+                                <td class="py-3 text-green-400/90 font-mono">$${p.take_profit.toFixed(2)}</td>
+                                <td class="py-3 font-mono font-bold ${pnlColor}">${p.pnl >= 0 ? '+' : ''}$${p.pnl.toFixed(2)} (${p.pnl_percent >= 0 ? '+' : ''}${p.pnl_percent.toFixed(2)}%)</td>
+                                <td class="py-3 text-right">
+                                    <button onclick="closePosition('${p.ticker}', ${p.shares})" class="px-2.5 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs rounded border border-red-500/30 font-bold transition">Close</button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+
+                // Render Equity Curve Chart
+                const history = data.equity_history || [];
+                const labels = history.map(h => new Date(h.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+                const equityPoints = history.map(h => h.equity);
+
+                if (equityChart) {
+                    equityChart.destroy();
+                }
+
+                const ctx = document.getElementById('equityCurveChart').getContext('2d');
+                equityChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Account Equity ($)',
+                            data: equityPoints,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.05)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 2,
+                            pointRadius: 2,
+                            pointHoverRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: {
+                                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                                ticks: { color: 'rgba(255, 255, 255, 0.5)', maxTicksLimit: 8 }
+                            },
+                            y: {
+                                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                                ticks: { color: 'rgba(255, 255, 255, 0.5)' }
+                            }
+                        }
+                    }
+                });
+            } catch (e) {
+                console.error("Error loading portfolio:", e);
+            }
+        }
+
+        // Initial load
+        setActiveTab(currentTab);
+        loadData('stocks');
+        updateStatus();
+        setInterval(updateStatus, 10000);
+        setInterval(() => {
+            if (currentTab !== 'analyze') loadData(currentTab);
+        }, 60000);
+
+        // Register PWA Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('PWA Service Worker registered!', reg))
+                    .catch(err => console.error('PWA Service Worker registration failed:', err));
+            });
+        }
+    </script>
+</body>
+</html>

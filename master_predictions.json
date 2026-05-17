@@ -1,0 +1,988 @@
+[
+  {
+    "asset": "AAPL",
+    "direction": "BEARISH",
+    "confidence": "50%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:24:01.176776"
+  },
+  {
+    "asset": "MSFT",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:24:04.190289"
+  },
+  {
+    "asset": "^N225",
+    "direction": "BEARISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "60%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "PASS",
+    "timestamp": "2026-05-17T04:24:05.621649"
+  },
+  {
+    "asset": "MSFT",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:24:11.343754"
+  },
+  {
+    "asset": "NVDA",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:24:13.362101"
+  },
+  {
+    "asset": "AAPL",
+    "direction": "BEARISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "-5%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "TRAP_DETECTED",
+    "timestamp": "2026-05-17T04:24:20.922723"
+  },
+  {
+    "asset": "NVDA",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:24:21.033024"
+  },
+  {
+    "asset": "MSFT",
+    "direction": "BULLISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "75%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "PASS",
+    "timestamp": "2026-05-17T04:24:33.151699"
+  },
+  {
+    "asset": "TSLA",
+    "direction": "BEARISH",
+    "confidence": "70%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:24:34.230552"
+  },
+  {
+    "asset": "TSLA",
+    "direction": "BEARISH",
+    "confidence": "70%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:24:35.630503"
+  },
+  {
+    "asset": "NVDA",
+    "direction": "BULLISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "60%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "PASS",
+    "timestamp": "2026-05-17T04:24:43.090524"
+  },
+  {
+    "asset": "LUCK.PSX",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:24:46.960417"
+  },
+  {
+    "asset": "LUCK.PSX",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:24:49.339527"
+  },
+  {
+    "asset": "TSLA",
+    "direction": "BEARISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "20%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "TRAP_DETECTED",
+    "timestamp": "2026-05-17T04:24:57.532972"
+  },
+  {
+    "asset": "AAPL",
+    "direction": "BEARISH",
+    "confidence": "50%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:25:00.017324"
+  },
+  {
+    "asset": "AAPL",
+    "direction": "BEARISH",
+    "confidence": "50%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:25:03.759162"
+  },
+  {
+    "asset": "MSFT",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:25:08.834131"
+  },
+  {
+    "asset": "GOOGL",
+    "direction": "BEARISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "35%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "TRAP_DETECTED",
+    "timestamp": "2026-05-17T04:25:13.081414"
+  },
+  {
+    "asset": "MSFT",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:25:17.560812"
+  },
+  {
+    "asset": "NVDA",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:25:25.746982"
+  },
+  {
+    "asset": "NVDA",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:25:26.679708"
+  },
+  {
+    "asset": "AMD",
+    "direction": "BEARISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "60%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "PASS",
+    "timestamp": "2026-05-17T04:25:33.316953"
+  },
+  {
+    "asset": "TSLA",
+    "direction": "BEARISH",
+    "confidence": "70%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:25:41.496342"
+  },
+  {
+    "asset": "META",
+    "direction": "BULLISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "20%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "TRAP_DETECTED",
+    "timestamp": "2026-05-17T04:25:47.595004"
+  },
+  {
+    "asset": "TSLA",
+    "direction": "BEARISH",
+    "confidence": "70%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:25:48.861051"
+  },
+  {
+    "asset": "LUCK.PSX",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:25:52.017424"
+  },
+  {
+    "asset": "LUCK.PSX",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:25:58.253093"
+  },
+  {
+    "asset": "AMZN",
+    "direction": "BULLISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "60%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "PASS",
+    "timestamp": "2026-05-17T04:26:02.163739"
+  },
+  {
+    "asset": "AAPL",
+    "direction": "BEARISH",
+    "confidence": "50%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:26:03.249044"
+  },
+  {
+    "asset": "LUCK.PSX",
+    "direction": "BULLISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "75%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "PASS",
+    "timestamp": "2026-05-17T04:26:09.874820"
+  },
+  {
+    "asset": "AAPL",
+    "direction": "BEARISH",
+    "confidence": "50%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:26:11.808522"
+  },
+  {
+    "asset": "MSFT",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:26:14.486533"
+  },
+  {
+    "asset": "ENGRO.PSX",
+    "direction": "BEARISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "60%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "PASS",
+    "timestamp": "2026-05-17T04:26:20.096750"
+  },
+  {
+    "asset": "NVDA",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:26:22.450105"
+  },
+  {
+    "asset": "MSFT",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:26:23.135309"
+  },
+  {
+    "asset": "TSLA",
+    "direction": "BEARISH",
+    "confidence": "70%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:26:32.915515"
+  },
+  {
+    "asset": "SYS.PSX",
+    "direction": "BULLISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "75%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "PASS",
+    "timestamp": "2026-05-17T04:26:34.103991"
+  },
+  {
+    "asset": "NVDA",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:26:40.077313"
+  },
+  {
+    "asset": "LUCK.PSX",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:26:40.532114"
+  },
+  {
+    "asset": "EURUSD=X",
+    "direction": "BULLISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "75%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "PASS",
+    "timestamp": "2026-05-17T04:26:49.128987"
+  },
+  {
+    "asset": "AAPL",
+    "direction": "BEARISH",
+    "confidence": "50%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:26:55.701980"
+  },
+  {
+    "asset": "TSLA",
+    "direction": "BEARISH",
+    "confidence": "70%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:27:01.041712"
+  },
+  {
+    "asset": "GBPUSD=X",
+    "direction": "BULLISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "75%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "PASS",
+    "timestamp": "2026-05-17T04:27:05.142949"
+  },
+  {
+    "asset": "MSFT",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:27:06.324477"
+  },
+  {
+    "asset": "LUCK.PSX",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:27:12.603531"
+  },
+  {
+    "asset": "NVDA",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:27:14.141334"
+  },
+  {
+    "asset": "JPY=X",
+    "direction": "BULLISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "75%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "PASS",
+    "timestamp": "2026-05-17T04:27:22.577244"
+  },
+  {
+    "asset": "AAPL",
+    "direction": "BEARISH",
+    "confidence": "50%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:27:25.881278"
+  },
+  {
+    "asset": "TSLA",
+    "direction": "BEARISH",
+    "confidence": "70%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:27:28.032952"
+  },
+  {
+    "asset": "AUDUSD=X",
+    "direction": "BULLISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "35%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "TRAP_DETECTED",
+    "timestamp": "2026-05-17T04:27:36.840410"
+  },
+  {
+    "asset": "MSFT",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:27:39.950140"
+  },
+  {
+    "asset": "LUCK.PSX",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:27:40.766058"
+  },
+  {
+    "asset": "EURGBP=X",
+    "direction": "BEARISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "75%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "PASS",
+    "timestamp": "2026-05-17T04:27:49.044576"
+  },
+  {
+    "asset": "AAPL",
+    "direction": "BEARISH",
+    "confidence": "50%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:27:49.187292"
+  },
+  {
+    "asset": "NVDA",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:27:58.749218"
+  },
+  {
+    "asset": "EURJPY=X",
+    "direction": "BULLISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "75%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "PASS",
+    "timestamp": "2026-05-17T04:28:03.247082"
+  },
+  {
+    "asset": "MSFT",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:28:07.633042"
+  },
+  {
+    "asset": "TSLA",
+    "direction": "BEARISH",
+    "confidence": "70%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:28:09.556874"
+  },
+  {
+    "asset": "NVDA",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:28:18.210252"
+  },
+  {
+    "asset": "GC=F",
+    "direction": "BULLISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "60%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "PASS",
+    "timestamp": "2026-05-17T04:28:19.002029"
+  },
+  {
+    "asset": "LUCK.PSX",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:28:21.203390"
+  },
+  {
+    "asset": "TSLA",
+    "direction": "BEARISH",
+    "confidence": "70%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:28:31.457718"
+  },
+  {
+    "asset": "SI=F",
+    "direction": "BULLISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "60%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "PASS",
+    "timestamp": "2026-05-17T04:28:31.848921"
+  },
+  {
+    "asset": "LUCK.PSX",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:28:40.947316"
+  },
+  {
+    "asset": "AAPL",
+    "direction": "BEARISH",
+    "confidence": "50%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:28:41.426449"
+  },
+  {
+    "asset": "CL=F",
+    "direction": "BEARISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "60%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "PASS",
+    "timestamp": "2026-05-17T04:28:47.917622"
+  },
+  {
+    "asset": "MSFT",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:28:55.870145"
+  },
+  {
+    "asset": "AAPL",
+    "direction": "BEARISH",
+    "confidence": "50%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:28:56.063002"
+  },
+  {
+    "asset": "NG=F",
+    "direction": "BEARISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "50%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "PASS",
+    "timestamp": "2026-05-17T04:29:05.926126"
+  },
+  {
+    "asset": "MSFT",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:29:06.037317"
+  },
+  {
+    "asset": "NVDA",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:29:11.140634"
+  },
+  {
+    "asset": "NVDA",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:29:16.804664"
+  },
+  {
+    "asset": "HG=F",
+    "direction": "BULLISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "20%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "TRAP_DETECTED",
+    "timestamp": "2026-05-17T04:29:17.638184"
+  },
+  {
+    "asset": "TSLA",
+    "direction": "BEARISH",
+    "confidence": "70%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:29:22.385066"
+  },
+  {
+    "asset": "TSLA",
+    "direction": "BEARISH",
+    "confidence": "70%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:29:29.766675"
+  },
+  {
+    "asset": "ZC=F",
+    "direction": "BULLISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "75%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "PASS",
+    "timestamp": "2026-05-17T04:29:31.508951"
+  },
+  {
+    "asset": "LUCK.PSX",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:29:31.535266"
+  },
+  {
+    "asset": "LUCK.PSX",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:29:42.601642"
+  },
+  {
+    "asset": "AAPL",
+    "direction": "BEARISH",
+    "confidence": "50%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:29:43.263433"
+  },
+  {
+    "asset": "BTC-USD",
+    "direction": "BULLISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "60%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "PASS",
+    "timestamp": "2026-05-17T04:29:44.086881"
+  },
+  {
+    "asset": "AAPL",
+    "direction": "BEARISH",
+    "confidence": "50%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:29:50.992761"
+  },
+  {
+    "asset": "ETH-USD",
+    "direction": "BULLISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "75%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "PASS",
+    "timestamp": "2026-05-17T04:29:54.148552"
+  },
+  {
+    "asset": "MSFT",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:29:58.179045"
+  },
+  {
+    "asset": "MSFT",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:30:01.420744"
+  },
+  {
+    "asset": "SOL-USD",
+    "direction": "BULLISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "75%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "PASS",
+    "timestamp": "2026-05-17T04:30:04.371621"
+  },
+  {
+    "asset": "NVDA",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:30:12.352784"
+  },
+  {
+    "asset": "BNB-USD",
+    "direction": "BEARISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "60%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "PASS",
+    "timestamp": "2026-05-17T04:30:13.071399"
+  },
+  {
+    "asset": "NVDA",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:30:13.300805"
+  },
+  {
+    "asset": "XRP-USD",
+    "direction": "BULLISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "60%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "PASS",
+    "timestamp": "2026-05-17T04:30:20.644176"
+  },
+  {
+    "asset": "TSLA",
+    "direction": "BEARISH",
+    "confidence": "70%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:30:27.282139"
+  },
+  {
+    "asset": "TSLA",
+    "direction": "BEARISH",
+    "confidence": "70%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:30:27.666975"
+  },
+  {
+    "asset": "LUCK.PSX",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:30:34.904255"
+  },
+  {
+    "asset": "^GSPC",
+    "direction": "BEARISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "60%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "PASS",
+    "timestamp": "2026-05-17T04:30:39.337068"
+  },
+  {
+    "asset": "LUCK.PSX",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:30:39.605037"
+  },
+  {
+    "asset": "AAPL",
+    "direction": "BEARISH",
+    "confidence": "50%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:30:49.642554"
+  },
+  {
+    "asset": "AAPL",
+    "direction": "BEARISH",
+    "confidence": "50%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:30:51.731545"
+  },
+  {
+    "asset": "^IXIC",
+    "direction": "BEARISH",
+    "strategy": "QUANT_TREND",
+    "confidence": "35%",
+    "is_gold_signal": false,
+    "bracket_order": {
+      "stop_loss_pct": 0.5,
+      "take_profit_pct": 1.0,
+      "ratio": "2:1"
+    },
+    "risk_status": "TRAP_DETECTED",
+    "timestamp": "2026-05-17T04:30:52.535390"
+  },
+  {
+    "asset": "MSFT",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:31:00.721104"
+  },
+  {
+    "asset": "MSFT",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:31:04.937483"
+  },
+  {
+    "asset": "NVDA",
+    "direction": "BULLISH",
+    "confidence": "60%",
+    "risk_adjusted_allocation": "5.0%",
+    "target_zones": "Dynamic",
+    "timestamp": "2026-05-17T04:31:10.446780"
+  }
+]

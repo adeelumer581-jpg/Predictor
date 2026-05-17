@@ -1,0 +1,425 @@
+{
+  "summary": {
+    "total_tickers": 30,
+    "success": 30,
+    "failed": 0,
+    "total_time": 423.22487688064575,
+    "avg_time": 14.107495896021526,
+    "avg_accuracy": 0.49311750924503106,
+    "total_samples": 218994,
+    "total_days": 224994,
+    "results": [
+      {
+        "ticker": "AAPL",
+        "status": "success",
+        "accuracy": 0.5177777777777778,
+        "training_time": 21.646586179733276,
+        "data_days": 11448,
+        "samples": 11248,
+        "patterns": [
+          "BULLISH_ENGULFING",
+          "PIERCING_LINE"
+        ],
+        "train_samples": 8998,
+        "test_samples": 2250
+      },
+      {
+        "ticker": "MSFT",
+        "status": "success",
+        "accuracy": 0.4957178841309824,
+        "training_time": 18.15486478805542,
+        "data_days": 10122,
+        "samples": 9922,
+        "patterns": [
+          "THREE_WHITE_SOLDIERS"
+        ],
+        "train_samples": 7937,
+        "test_samples": 1985
+      },
+      {
+        "ticker": "GOOGL",
+        "status": "success",
+        "accuracy": 0.4829222011385199,
+        "training_time": 9.569477558135986,
+        "data_days": 5470,
+        "samples": 5270,
+        "patterns": [
+          "DOJI",
+          "GRAVESTONE_DOJI",
+          "DRAGONFLY_DOJI",
+          "SPINNING_TOP"
+        ],
+        "train_samples": 4216,
+        "test_samples": 1054
+      },
+      {
+        "ticker": "AMZN",
+        "status": "success",
+        "accuracy": 0.5014084507042254,
+        "training_time": 15.034857988357544,
+        "data_days": 7296,
+        "samples": 7096,
+        "patterns": [],
+        "train_samples": 5676,
+        "test_samples": 1420
+      },
+      {
+        "ticker": "NVDA",
+        "status": "success",
+        "accuracy": 0.4764044943820225,
+        "training_time": 15.301855087280273,
+        "data_days": 6871,
+        "samples": 6671,
+        "patterns": [],
+        "train_samples": 5336,
+        "test_samples": 1335
+      },
+      {
+        "ticker": "META",
+        "status": "success",
+        "accuracy": 0.48042168674698793,
+        "training_time": 9.822156190872192,
+        "data_days": 3518,
+        "samples": 3318,
+        "patterns": [
+          "DOJI",
+          "GRAVESTONE_DOJI",
+          "DRAGONFLY_DOJI",
+          "SPINNING_TOP"
+        ],
+        "train_samples": 2654,
+        "test_samples": 664
+      },
+      {
+        "ticker": "TSLA",
+        "status": "success",
+        "accuracy": 0.5085638998682477,
+        "training_time": 12.430296421051025,
+        "data_days": 3995,
+        "samples": 3795,
+        "patterns": [],
+        "train_samples": 3036,
+        "test_samples": 759
+      },
+      {
+        "ticker": "NFLX",
+        "status": "success",
+        "accuracy": 0.49785775492716366,
+        "training_time": 16.910051584243774,
+        "data_days": 6034,
+        "samples": 5834,
+        "patterns": [
+          "INVERTED_HAMMER",
+          "SHOOTING_STAR"
+        ],
+        "train_samples": 4667,
+        "test_samples": 1167
+      },
+      {
+        "ticker": "ADBE",
+        "status": "success",
+        "accuracy": 0.4893075356415479,
+        "training_time": 20.247514486312866,
+        "data_days": 10016,
+        "samples": 9816,
+        "patterns": [],
+        "train_samples": 7852,
+        "test_samples": 1964
+      },
+      {
+        "ticker": "CRM",
+        "status": "success",
+        "accuracy": 0.5065913370998116,
+        "training_time": 9.175399780273438,
+        "data_days": 5510,
+        "samples": 5310,
+        "patterns": [],
+        "train_samples": 4248,
+        "test_samples": 1062
+      },
+      {
+        "ticker": "ORCL",
+        "status": "success",
+        "accuracy": 0.47909319899244335,
+        "training_time": 17.42330813407898,
+        "data_days": 10123,
+        "samples": 9923,
+        "patterns": [],
+        "train_samples": 7938,
+        "test_samples": 1985
+      },
+      {
+        "ticker": "IBM",
+        "status": "success",
+        "accuracy": 0.4989065916900968,
+        "training_time": 36.105844020843506,
+        "data_days": 16201,
+        "samples": 16001,
+        "patterns": [],
+        "train_samples": 12800,
+        "test_samples": 3201
+      },
+      {
+        "ticker": "INTC",
+        "status": "success",
+        "accuracy": 0.5118006993006993,
+        "training_time": 18.692088842391968,
+        "data_days": 11636,
+        "samples": 11436,
+        "patterns": [],
+        "train_samples": 9148,
+        "test_samples": 2288
+      },
+      {
+        "ticker": "AMD",
+        "status": "success",
+        "accuracy": 0.5087412587412588,
+        "training_time": 18.136348724365234,
+        "data_days": 11636,
+        "samples": 11436,
+        "patterns": [],
+        "train_samples": 9148,
+        "test_samples": 2288
+      },
+      {
+        "ticker": "QCOM",
+        "status": "success",
+        "accuracy": 0.4970484061393152,
+        "training_time": 14.99944806098938,
+        "data_days": 8666,
+        "samples": 8466,
+        "patterns": [
+          "DOJI",
+          "GRAVESTONE_DOJI",
+          "DRAGONFLY_DOJI",
+          "SPINNING_TOP"
+        ],
+        "train_samples": 6772,
+        "test_samples": 1694
+      },
+      {
+        "ticker": "TXN",
+        "status": "success",
+        "accuracy": 0.47370384185005593,
+        "training_time": 23.37879228591919,
+        "data_days": 13602,
+        "samples": 13402,
+        "patterns": [
+          "DOJI",
+          "GRAVESTONE_DOJI",
+          "DRAGONFLY_DOJI",
+          "SPINNING_TOP"
+        ],
+        "train_samples": 10721,
+        "test_samples": 2681
+      },
+      {
+        "ticker": "AVGO",
+        "status": "success",
+        "accuracy": 0.4639303482587065,
+        "training_time": 7.24902606010437,
+        "data_days": 4220,
+        "samples": 4020,
+        "patterns": [],
+        "train_samples": 3216,
+        "test_samples": 804
+      },
+      {
+        "ticker": "MU",
+        "status": "success",
+        "accuracy": 0.48289156626506025,
+        "training_time": 20.22959876060486,
+        "data_days": 10571,
+        "samples": 10371,
+        "patterns": [
+          "THREE_BLACK_CROWS"
+        ],
+        "train_samples": 8296,
+        "test_samples": 2075
+      },
+      {
+        "ticker": "AMAT",
+        "status": "success",
+        "accuracy": 0.5122377622377622,
+        "training_time": 19.83728289604187,
+        "data_days": 11636,
+        "samples": 11436,
+        "patterns": [],
+        "train_samples": 9148,
+        "test_samples": 2288
+      },
+      {
+        "ticker": "LRCX",
+        "status": "success",
+        "accuracy": 0.49326275264677577,
+        "training_time": 18.957542657852173,
+        "data_days": 10590,
+        "samples": 10390,
+        "patterns": [],
+        "train_samples": 8312,
+        "test_samples": 2078
+      },
+      {
+        "ticker": "KLAC",
+        "status": "success",
+        "accuracy": 0.5135015493581231,
+        "training_time": 19.345962047576904,
+        "data_days": 11493,
+        "samples": 11293,
+        "patterns": [],
+        "train_samples": 9034,
+        "test_samples": 2259
+      },
+      {
+        "ticker": "SNPS",
+        "status": "success",
+        "accuracy": 0.4744655581947744,
+        "training_time": 14.45031476020813,
+        "data_days": 8616,
+        "samples": 8416,
+        "patterns": [
+          "DOJI",
+          "GRAVESTONE_DOJI",
+          "DRAGONFLY_DOJI",
+          "SPINNING_TOP"
+        ],
+        "train_samples": 6732,
+        "test_samples": 1684
+      },
+      {
+        "ticker": "CDNS",
+        "status": "success",
+        "accuracy": 0.4869927159209157,
+        "training_time": 15.93172812461853,
+        "data_days": 9808,
+        "samples": 9608,
+        "patterns": [],
+        "train_samples": 7686,
+        "test_samples": 1922
+      },
+      {
+        "ticker": "PANW",
+        "status": "success",
+        "accuracy": 0.4549618320610687,
+        "training_time": 6.869750738143921,
+        "data_days": 3475,
+        "samples": 3275,
+        "patterns": [
+          "THREE_WHITE_SOLDIERS"
+        ],
+        "train_samples": 2620,
+        "test_samples": 655
+      },
+      {
+        "ticker": "FTNT",
+        "status": "success",
+        "accuracy": 0.47468354430379744,
+        "training_time": 7.214859485626221,
+        "data_days": 4147,
+        "samples": 3947,
+        "patterns": [
+          "THREE_WHITE_SOLDIERS"
+        ],
+        "train_samples": 3157,
+        "test_samples": 790
+      },
+      {
+        "ticker": "CRWD",
+        "status": "success",
+        "accuracy": 0.49514563106796117,
+        "training_time": 3.360917091369629,
+        "data_days": 1742,
+        "samples": 1542,
+        "patterns": [
+          "THREE_WHITE_SOLDIERS"
+        ],
+        "train_samples": 1233,
+        "test_samples": 309
+      },
+      {
+        "ticker": "NET",
+        "status": "success",
+        "accuracy": 0.4594594594594595,
+        "training_time": 3.2247626781463623,
+        "data_days": 1677,
+        "samples": 1477,
+        "patterns": [
+          "DOJI",
+          "GRAVESTONE_DOJI",
+          "DRAGONFLY_DOJI",
+          "SPINNING_TOP"
+        ],
+        "train_samples": 1181,
+        "test_samples": 296
+      },
+      {
+        "ticker": "DDOG",
+        "status": "success",
+        "accuracy": 0.5559322033898305,
+        "training_time": 3.3380978107452393,
+        "data_days": 1673,
+        "samples": 1473,
+        "patterns": [
+          "BULLISH_ENGULFING",
+          "PIERCING_LINE"
+        ],
+        "train_samples": 1178,
+        "test_samples": 295
+      },
+      {
+        "ticker": "SNOW",
+        "status": "success",
+        "accuracy": 0.5061224489795918,
+        "training_time": 2.596083641052246,
+        "data_days": 1423,
+        "samples": 1223,
+        "patterns": [
+          "BULLISH_ENGULFING",
+          "PIERCING_LINE"
+        ],
+        "train_samples": 978,
+        "test_samples": 245
+      },
+      {
+        "ticker": "ZM",
+        "status": "success",
+        "accuracy": 0.4936708860759494,
+        "training_time": 3.3430891036987305,
+        "data_days": 1779,
+        "samples": 1579,
+        "patterns": [],
+        "train_samples": 1263,
+        "test_samples": 316
+      }
+    ]
+  },
+  "agents": {
+    "TrainingAgent": {
+      "status": "trained",
+      "models": 30,
+      "accuracy": 0.49311750924503106
+    },
+    "AntiGravityAgent": {
+      "status": "active",
+      "optimization": "enabled",
+      "target": "<500ms training"
+    },
+    "DevelopmentAgent": {
+      "status": "ready",
+      "code_improvements": 0
+    },
+    "SecurityAgent": {
+      "status": "active",
+      "threat_detection": "enabled"
+    },
+    "DebugAgent": {
+      "status": "active",
+      "auto_debugging": "enabled"
+    },
+    "UpscalingAgent": {
+      "status": "ready",
+      "auto_scaling": "enabled"
+    }
+  },
+  "timestamp": "2026-05-17T03:48:58.167482"
+}

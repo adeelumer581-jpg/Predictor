@@ -3,13 +3,11 @@ __pycache__/
 *.pyo
 *.pkl
 *.log
-*.json
-node_modules/
 .env
 .git/
-templates/
 *.egg-info/
 .pytest_cache/
 market_data.db
-scratch/
-apex_accuracy.json
+.smart_cache/portfolio_state.json
+.smart_cache/predictions_feedback.json
+training_checkpoint.json
