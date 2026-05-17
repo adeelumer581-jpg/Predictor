@@ -1275,6 +1275,29 @@ def api_status():
 
 
 # ============================================================
+# AGENTS STATUS API
+# ============================================================
+
+@app.route('/api/agents')
+def api_agents():
+    """Get status of all running agent threads"""
+    import threading
+    agent_threads = []
+    for t in threading.enumerate():
+        if t.name in ("PerpetualOrchestrator", "MultiAgentSystem", "MainAgency", "live-prediction-stream"):
+            agent_threads.append({
+                "name": t.name,
+                "status": "running" if t.is_alive() else "stopped",
+                "daemon": t.daemon
+            })
+    return jsonify({
+        "agents": agent_threads,
+        "total": len(agent_threads),
+        "running": sum(1 for a in agent_threads if a["status"] == "running")
+    })
+
+
+# ============================================================
 # PORTFOLIO & PAPER TRADING API
 # ============================================================
 
@@ -1495,14 +1518,96 @@ def live_prediction_stream():
         time.sleep(60)
 
 
+def _run_perpetual_orchestrator():
+    """Run the perpetual orchestrator (Scout→Math→Historian→Bear→Warden→Boss→Equity) in background."""
+    import asyncio
+    try:
+        from agent_system.perpetual_orchestrator import PerpetualOrchestrator
+        orchestrator = PerpetualOrchestrator()
+        logger.info("[AgentSystem] PerpetualOrchestrator started — Scout, Math, Historian, Bear, Warden, Boss, Equity agents running")
+        asyncio.run(orchestrator.start())
+    except Exception as e:
+        logger.error(f"[AgentSystem] PerpetualOrchestrator error: {e}")
+
+
+def _run_multi_agent_system():
+    """Run Training, Development, Security, Debug, Upscaling agents in background."""
+    import asyncio
+    async def _start():
+        try:
+            from agent_system.run_agents import MultiAgentSystem
+            system = MultiAgentSystem()
+            system.setup_agents()
+            await system.start_all()
+            logger.info("[AgentSystem] MultiAgentSystem started — Training, Development, Security, Debug, Upscaling agents running")
+            await system.run_monitoring_cycle(interval=60)
+        except Exception as e:
+            logger.error(f"[AgentSystem] MultiAgentSystem error: {e}")
+    asyncio.run(_start())
+
+
+def _run_main_agency():
+    """Run Boss + Worker agency (daily orders + 5-min scans)."""
+    try:
+        import schedule, time as _time
+        from boss_agent import BossAgent
+        from worker_agent import WorkerAgent
+        boss = BossAgent()
+        worker = WorkerAgent()
+
+        def daily_boss_meeting():
+            try:
+                orders = boss.issue_daily_orders(num_assets=5)
+                worker.receive_orders(orders)
+                worker.execute_scan()
+                logger.info("[AgentSystem] Boss issued daily orders, Worker scanning")
+            except Exception as e:
+                logger.error(f"[AgentSystem] Boss/Worker error: {e}")
+
+        def worker_scan():
+            try:
+                worker.execute_scan()
+            except Exception as e:
+                logger.error(f"[AgentSystem] Worker scan error: {e}")
+
+        schedule.every().day.at("08:00").do(daily_boss_meeting)
+        schedule.every(5).minutes.do(worker_scan)
+        daily_boss_meeting()  # Run immediately on startup
+        logger.info("[AgentSystem] Main Agency started — Boss (daily) + Worker (every 5 min)")
+        while True:
+            schedule.run_pending()
+            _time.sleep(1)
+    except Exception as e:
+        logger.error(f"[AgentSystem] Main Agency error: {e}")
+
+
+def start_all_agents():
+    """Launch all agent systems as background daemon threads."""
+    agents = [
+        ("PerpetualOrchestrator", _run_perpetual_orchestrator),
+        ("MultiAgentSystem",      _run_multi_agent_system),
+        ("MainAgency",            _run_main_agency),
+    ]
+    for name, target in agents:
+        t = threading.Thread(target=target, daemon=True, name=name)
+        t.start()
+        logger.info(f"[AgentSystem] {name} thread launched")
+
+
 def start_background_workers():
-    """Start lightweight automated workers used by the dashboard."""
+    """Start live prediction stream, all agents, and keep-alive."""
     global is_live_streaming
     if is_live_streaming:
         return
+
+    # Live prediction stream
     thread = threading.Thread(target=live_prediction_stream, daemon=True, name="live-prediction-stream")
     thread.start()
-    # Keep-alive for Render free tier (prevents sleep after 15 min inactivity)
+
+    # All agent systems
+    start_all_agents()
+
+    # Keep-alive for Render free tier
     try:
         from keep_alive import start_keep_alive
         start_keep_alive()
