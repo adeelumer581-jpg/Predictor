@@ -1,0 +1,7 @@
+{
+  "STOCKS": ["AAPL", "MSFT", "NVDA", "TSLA", "GOOGL", "AMD", "META", "AMZN", "LUCK.PSX", "ENGRO.PSX", "SYS.PSX"],
+  "FOREX": ["EURUSD=X", "GBPUSD=X", "JPY=X", "AUDUSD=X", "EURGBP=X", "EURJPY=X"],
+  "COMMODITIES": ["GC=F", "SI=F", "CL=F", "NG=F", "HG=F", "ZC=F"],
+  "CRYPTO": ["BTC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "XRP-USD"],
+  "INDICES": ["^GSPC", "^IXIC", "^DJI", "^FTSE", "^N225"]
+}

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "*",
+      "PowerShell(*)",
+      "PowerShell(python run_predictor.py AAPL)"
+    ]
+  }
+}

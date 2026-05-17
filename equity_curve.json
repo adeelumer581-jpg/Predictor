@@ -1,0 +1,368 @@
+[
+  {
+    "timestamp": "2026-05-17T04:16:40.496245",
+    "ticker": "AAPL",
+    "pnl": -100.0,
+    "balance": 9900.0
+  },
+  {
+    "timestamp": "2026-05-17T04:16:55.545649",
+    "ticker": "MSFT",
+    "pnl": -99.0,
+    "balance": 9801.0
+  },
+  {
+    "timestamp": "2026-05-17T04:17:07.377951",
+    "ticker": "NVDA",
+    "pnl": -98.01,
+    "balance": 9702.99
+  },
+  {
+    "timestamp": "2026-05-17T04:17:26.853331",
+    "ticker": "TSLA",
+    "pnl": -97.03,
+    "balance": 9605.96
+  },
+  {
+    "timestamp": "2026-05-17T04:17:34.922527",
+    "ticker": "GOOGL",
+    "pnl": 192.12,
+    "balance": 9798.08
+  },
+  {
+    "timestamp": "2026-05-17T04:17:51.033408",
+    "ticker": "AMD",
+    "pnl": 195.96,
+    "balance": 9994.04
+  },
+  {
+    "timestamp": "2026-05-17T04:18:07.267664",
+    "ticker": "META",
+    "pnl": -99.94,
+    "balance": 9894.1
+  },
+  {
+    "timestamp": "2026-05-17T04:18:18.656071",
+    "ticker": "AMZN",
+    "pnl": 197.88,
+    "balance": 10091.98
+  },
+  {
+    "timestamp": "2026-05-17T04:18:28.969699",
+    "ticker": "LUCK.PSX",
+    "pnl": 201.84,
+    "balance": 10293.82
+  },
+  {
+    "timestamp": "2026-05-17T04:19:12.401086",
+    "ticker": "EURUSD=X",
+    "pnl": -102.94,
+    "balance": 10190.88
+  },
+  {
+    "timestamp": "2026-05-17T04:19:27.547330",
+    "ticker": "GBPUSD=X",
+    "pnl": 203.82,
+    "balance": 10394.7
+  },
+  {
+    "timestamp": "2026-05-17T04:19:43.148963",
+    "ticker": "JPY=X",
+    "pnl": 207.89,
+    "balance": 10602.6
+  },
+  {
+    "timestamp": "2026-05-17T04:19:58.491559",
+    "ticker": "AUDUSD=X",
+    "pnl": -106.03,
+    "balance": 10496.57
+  },
+  {
+    "timestamp": "2026-05-17T04:20:11.624978",
+    "ticker": "EURGBP=X",
+    "pnl": 209.93,
+    "balance": 10706.5
+  },
+  {
+    "timestamp": "2026-05-17T04:20:24.672878",
+    "ticker": "EURJPY=X",
+    "pnl": -107.07,
+    "balance": 10599.44
+  },
+  {
+    "timestamp": "2026-05-17T04:20:37.687120",
+    "ticker": "GC=F",
+    "pnl": 211.99,
+    "balance": 10811.42
+  },
+  {
+    "timestamp": "2026-05-17T04:20:52.188564",
+    "ticker": "SI=F",
+    "pnl": -108.11,
+    "balance": 10703.31
+  },
+  {
+    "timestamp": "2026-05-17T04:21:04.625637",
+    "ticker": "CL=F",
+    "pnl": 214.07,
+    "balance": 10917.38
+  },
+  {
+    "timestamp": "2026-05-17T04:21:25.356098",
+    "ticker": "NG=F",
+    "pnl": 218.35,
+    "balance": 11135.72
+  },
+  {
+    "timestamp": "2026-05-17T04:21:35.258257",
+    "ticker": "HG=F",
+    "pnl": -111.36,
+    "balance": 11024.37
+  },
+  {
+    "timestamp": "2026-05-17T04:21:50.540781",
+    "ticker": "ZC=F",
+    "pnl": 220.49,
+    "balance": 11244.85
+  },
+  {
+    "timestamp": "2026-05-17T04:22:02.410364",
+    "ticker": "BTC-USD",
+    "pnl": 224.9,
+    "balance": 11469.75
+  },
+  {
+    "timestamp": "2026-05-17T04:22:16.083522",
+    "ticker": "ETH-USD",
+    "pnl": -114.7,
+    "balance": 11355.05
+  },
+  {
+    "timestamp": "2026-05-17T04:22:34.330064",
+    "ticker": "SOL-USD",
+    "pnl": 227.1,
+    "balance": 11582.16
+  },
+  {
+    "timestamp": "2026-05-17T04:22:43.546640",
+    "ticker": "BNB-USD",
+    "pnl": 231.64,
+    "balance": 11813.8
+  },
+  {
+    "timestamp": "2026-05-17T04:22:54.826802",
+    "ticker": "XRP-USD",
+    "pnl": 236.28,
+    "balance": 12050.07
+  },
+  {
+    "timestamp": "2026-05-17T04:23:13.057526",
+    "ticker": "^GSPC",
+    "pnl": -120.5,
+    "balance": 11929.57
+  },
+  {
+    "timestamp": "2026-05-17T04:23:23.385079",
+    "ticker": "^IXIC",
+    "pnl": -119.3,
+    "balance": 11810.28
+  },
+  {
+    "timestamp": "2026-05-17T04:23:36.237512",
+    "ticker": "^DJI",
+    "pnl": 236.21,
+    "balance": 12046.48
+  },
+  {
+    "timestamp": "2026-05-17T04:23:52.815616",
+    "ticker": "^FTSE",
+    "pnl": 240.93,
+    "balance": 12287.41
+  },
+  {
+    "timestamp": "2026-05-17T04:24:05.639052",
+    "ticker": "^N225",
+    "pnl": 245.75,
+    "balance": 12533.16
+  },
+  {
+    "timestamp": "2026-05-17T04:24:20.937997",
+    "ticker": "AAPL",
+    "pnl": -125.33,
+    "balance": 12407.83
+  },
+  {
+    "timestamp": "2026-05-17T04:24:33.161939",
+    "ticker": "MSFT",
+    "pnl": 248.16,
+    "balance": 12655.99
+  },
+  {
+    "timestamp": "2026-05-17T04:24:43.099158",
+    "ticker": "NVDA",
+    "pnl": 253.12,
+    "balance": 12909.11
+  },
+  {
+    "timestamp": "2026-05-17T04:24:57.546248",
+    "ticker": "TSLA",
+    "pnl": -129.09,
+    "balance": 12780.01
+  },
+  {
+    "timestamp": "2026-05-17T04:25:13.097501",
+    "ticker": "GOOGL",
+    "pnl": 255.6,
+    "balance": 13035.62
+  },
+  {
+    "timestamp": "2026-05-17T04:25:33.331563",
+    "ticker": "AMD",
+    "pnl": -130.36,
+    "balance": 12905.26
+  },
+  {
+    "timestamp": "2026-05-17T04:25:47.611983",
+    "ticker": "META",
+    "pnl": -129.05,
+    "balance": 12776.21
+  },
+  {
+    "timestamp": "2026-05-17T04:26:02.173751",
+    "ticker": "AMZN",
+    "pnl": 255.52,
+    "balance": 13031.73
+  },
+  {
+    "timestamp": "2026-05-17T04:26:09.884765",
+    "ticker": "LUCK.PSX",
+    "pnl": -130.32,
+    "balance": 12901.41
+  },
+  {
+    "timestamp": "2026-05-17T04:26:20.111750",
+    "ticker": "ENGRO.PSX",
+    "pnl": -129.01,
+    "balance": 12772.4
+  },
+  {
+    "timestamp": "2026-05-17T04:26:34.117957",
+    "ticker": "SYS.PSX",
+    "pnl": 255.45,
+    "balance": 13027.85
+  },
+  {
+    "timestamp": "2026-05-17T04:26:49.151155",
+    "ticker": "EURUSD=X",
+    "pnl": 260.56,
+    "balance": 13288.4
+  },
+  {
+    "timestamp": "2026-05-17T04:27:05.160908",
+    "ticker": "GBPUSD=X",
+    "pnl": 265.77,
+    "balance": 13554.17
+  },
+  {
+    "timestamp": "2026-05-17T04:27:22.595956",
+    "ticker": "JPY=X",
+    "pnl": -135.54,
+    "balance": 13418.63
+  },
+  {
+    "timestamp": "2026-05-17T04:27:36.846570",
+    "ticker": "AUDUSD=X",
+    "pnl": -134.19,
+    "balance": 13284.44
+  },
+  {
+    "timestamp": "2026-05-17T04:27:49.067602",
+    "ticker": "EURGBP=X",
+    "pnl": -132.84,
+    "balance": 13151.6
+  },
+  {
+    "timestamp": "2026-05-17T04:28:03.257366",
+    "ticker": "EURJPY=X",
+    "pnl": 263.03,
+    "balance": 13414.63
+  },
+  {
+    "timestamp": "2026-05-17T04:28:19.021766",
+    "ticker": "GC=F",
+    "pnl": 268.29,
+    "balance": 13682.92
+  },
+  {
+    "timestamp": "2026-05-17T04:28:31.859846",
+    "ticker": "SI=F",
+    "pnl": 273.66,
+    "balance": 13956.58
+  },
+  {
+    "timestamp": "2026-05-17T04:28:47.936329",
+    "ticker": "CL=F",
+    "pnl": 279.13,
+    "balance": 14235.71
+  },
+  {
+    "timestamp": "2026-05-17T04:29:05.933937",
+    "ticker": "NG=F",
+    "pnl": 284.71,
+    "balance": 14520.43
+  },
+  {
+    "timestamp": "2026-05-17T04:29:17.650252",
+    "ticker": "HG=F",
+    "pnl": -145.2,
+    "balance": 14375.22
+  },
+  {
+    "timestamp": "2026-05-17T04:29:31.518872",
+    "ticker": "ZC=F",
+    "pnl": -143.75,
+    "balance": 14231.47
+  },
+  {
+    "timestamp": "2026-05-17T04:29:44.101559",
+    "ticker": "BTC-USD",
+    "pnl": -142.31,
+    "balance": 14089.16
+  },
+  {
+    "timestamp": "2026-05-17T04:29:54.159387",
+    "ticker": "ETH-USD",
+    "pnl": 281.78,
+    "balance": 14370.94
+  },
+  {
+    "timestamp": "2026-05-17T04:30:04.386784",
+    "ticker": "SOL-USD",
+    "pnl": 287.42,
+    "balance": 14658.36
+  },
+  {
+    "timestamp": "2026-05-17T04:30:13.087560",
+    "ticker": "BNB-USD",
+    "pnl": -146.58,
+    "balance": 14511.78
+  },
+  {
+    "timestamp": "2026-05-17T04:30:20.652772",
+    "ticker": "XRP-USD",
+    "pnl": 290.24,
+    "balance": 14802.01
+  },
+  {
+    "timestamp": "2026-05-17T04:30:39.351428",
+    "ticker": "^GSPC",
+    "pnl": 296.04,
+    "balance": 15098.05
+  },
+  {
+    "timestamp": "2026-05-17T04:30:52.544357",
+    "ticker": "^IXIC",
+    "pnl": -150.98,
+    "balance": 14947.07
+  }
+]

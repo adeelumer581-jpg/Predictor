@@ -2,5 +2,20 @@ services:
   - type: web
     name: stock-predictor
     env: python
+    region: oregon
+    plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: python comprehensive_system.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: PORT
+        value: 10000
+      - key: PREDICTION_WORKERS
+        value: 4
+      - key: PREDICTION_CACHE_TTL
+        value: 300
+      - key: MARKET_DATA_CACHE_TTL
+        value: 900
+    healthCheckPath: /api/status
+    autoDeploy: true

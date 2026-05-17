@@ -1,0 +1,237 @@
+{
+  "cycle": 3,
+  "timestamp": "2026-05-17T03:29:43.658490",
+  "training": {
+    "training_time_ms": 508.30732981363934,
+    "memory_mb": 13960.85546875,
+    "accuracy": 0.9887179487179487,
+    "results": [
+      {
+        "ticker": "AAPL",
+        "status": "success",
+        "accuracy": 1.0,
+        "patterns": {
+          "DOJI": false,
+          "HAMMER": false,
+          "SHOOTING_STAR": false,
+          "BULLISH_ENGULFING": true,
+          "BEARISH_ENGULFING": false,
+          "MORNING_STAR": false,
+          "EVENING_STAR": false
+        },
+        "last_price": 300.2300109863281
+      },
+      {
+        "ticker": "MSFT",
+        "status": "success",
+        "accuracy": 0.9769230769230769,
+        "patterns": {
+          "DOJI": false,
+          "HAMMER": false,
+          "SHOOTING_STAR": false,
+          "BULLISH_ENGULFING": false,
+          "BEARISH_ENGULFING": false,
+          "MORNING_STAR": false,
+          "EVENING_STAR": false
+        },
+        "last_price": 421.9200134277344
+      },
+      {
+        "ticker": "GOOGL",
+        "status": "success",
+        "accuracy": 1.0,
+        "patterns": {
+          "DOJI": true,
+          "HAMMER": false,
+          "SHOOTING_STAR": false,
+          "BULLISH_ENGULFING": false,
+          "BEARISH_ENGULFING": false,
+          "MORNING_STAR": false,
+          "EVENING_STAR": false
+        },
+        "last_price": 396.7799987792969
+      },
+      {
+        "ticker": "AMZN",
+        "status": "success",
+        "accuracy": 1.0,
+        "patterns": {
+          "DOJI": false,
+          "HAMMER": false,
+          "SHOOTING_STAR": false,
+          "BULLISH_ENGULFING": false,
+          "BEARISH_ENGULFING": false,
+          "MORNING_STAR": false,
+          "EVENING_STAR": false
+        },
+        "last_price": 264.1400146484375
+      },
+      {
+        "ticker": "NVDA",
+        "status": "success",
+        "accuracy": 0.9846153846153847,
+        "patterns": {
+          "DOJI": false,
+          "HAMMER": false,
+          "SHOOTING_STAR": false,
+          "BULLISH_ENGULFING": false,
+          "BEARISH_ENGULFING": false,
+          "MORNING_STAR": false,
+          "EVENING_STAR": false
+        },
+        "last_price": 225.32000732421875
+      },
+      {
+        "ticker": "META",
+        "status": "success",
+        "accuracy": 1.0,
+        "patterns": {
+          "DOJI": true,
+          "HAMMER": false,
+          "SHOOTING_STAR": false,
+          "BULLISH_ENGULFING": false,
+          "BEARISH_ENGULFING": false,
+          "MORNING_STAR": false,
+          "EVENING_STAR": false
+        },
+        "last_price": 614.22998046875
+      },
+      {
+        "ticker": "TSLA",
+        "status": "success",
+        "accuracy": 0.9846153846153847,
+        "patterns": {
+          "DOJI": false,
+          "HAMMER": false,
+          "SHOOTING_STAR": false,
+          "BULLISH_ENGULFING": false,
+          "BEARISH_ENGULFING": false,
+          "MORNING_STAR": false,
+          "EVENING_STAR": false
+        },
+        "last_price": 422.239990234375
+      },
+      {
+        "ticker": "AMD",
+        "status": "success",
+        "accuracy": 1.0,
+        "patterns": {
+          "DOJI": false,
+          "HAMMER": false,
+          "SHOOTING_STAR": false,
+          "BULLISH_ENGULFING": false,
+          "BEARISH_ENGULFING": false,
+          "MORNING_STAR": false,
+          "EVENING_STAR": false
+        },
+        "last_price": 424.1000061035156
+      },
+      {
+        "ticker": "INTC",
+        "status": "success",
+        "accuracy": 1.0,
+        "patterns": {
+          "DOJI": false,
+          "HAMMER": true,
+          "SHOOTING_STAR": false,
+          "BULLISH_ENGULFING": false,
+          "BEARISH_ENGULFING": false,
+          "MORNING_STAR": false,
+          "EVENING_STAR": false
+        },
+        "last_price": 108.7699966430664
+      },
+      {
+        "ticker": "NFLX",
+        "status": "success",
+        "accuracy": 0.9538461538461539,
+        "patterns": {
+          "DOJI": false,
+          "HAMMER": false,
+          "SHOOTING_STAR": true,
+          "BULLISH_ENGULFING": false,
+          "BEARISH_ENGULFING": false,
+          "MORNING_STAR": false,
+          "EVENING_STAR": false
+        },
+        "last_price": 87.0199966430664
+      },
+      {
+        "ticker": "CRM",
+        "status": "success",
+        "accuracy": 0.9769230769230769,
+        "patterns": {
+          "DOJI": false,
+          "HAMMER": false,
+          "SHOOTING_STAR": false,
+          "BULLISH_ENGULFING": false,
+          "BEARISH_ENGULFING": false,
+          "MORNING_STAR": false,
+          "EVENING_STAR": false
+        },
+        "last_price": 173.50999450683594
+      },
+      {
+        "ticker": "ADBE",
+        "status": "success",
+        "accuracy": 0.9769230769230769,
+        "patterns": {
+          "DOJI": false,
+          "HAMMER": false,
+          "SHOOTING_STAR": false,
+          "BULLISH_ENGULFING": false,
+          "BEARISH_ENGULFING": false,
+          "MORNING_STAR": false,
+          "EVENING_STAR": false
+        },
+        "last_price": 247.60000610351562
+      },
+      {
+        "ticker": "DIS",
+        "status": "success",
+        "accuracy": 0.9846153846153847,
+        "patterns": {
+          "DOJI": false,
+          "HAMMER": false,
+          "SHOOTING_STAR": false,
+          "BULLISH_ENGULFING": false,
+          "BEARISH_ENGULFING": false,
+          "MORNING_STAR": false,
+          "EVENING_STAR": false
+        },
+        "last_price": 102.72000122070312
+      },
+      {
+        "ticker": "JPM",
+        "status": "success",
+        "accuracy": 1.0,
+        "patterns": {
+          "DOJI": false,
+          "HAMMER": false,
+          "SHOOTING_STAR": false,
+          "BULLISH_ENGULFING": false,
+          "BEARISH_ENGULFING": false,
+          "MORNING_STAR": false,
+          "EVENING_STAR": false
+        },
+        "last_price": 297.80999755859375
+      },
+      {
+        "ticker": "BAC",
+        "status": "success",
+        "accuracy": 0.9923076923076923,
+        "patterns": {
+          "DOJI": false,
+          "HAMMER": false,
+          "SHOOTING_STAR": false,
+          "BULLISH_ENGULFING": false,
+          "BEARISH_ENGULFING": false,
+          "MORNING_STAR": false,
+          "EVENING_STAR": false
+        },
+        "last_price": 49.77000045776367
+      }
+    ]
+  },
+  "predictions": []
+}
