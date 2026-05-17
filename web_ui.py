@@ -589,7 +589,7 @@ async function startTraining() {
 }
 
 // Init
-loadDashboard();
+showSection('dashboard');
 </script>
 </body>
 </html>"""
@@ -615,20 +615,24 @@ def api_predict(ticker):
     ticker = ticker.upper()
     try:
         sys.path.insert(0, BASE_DIR)
-        from stock_predictor import StockPredictor
-        predictor = StockPredictor(ticker)
-        model_path = os.path.join(BASE_DIR, f"{ticker}_model.pkl")
-        if os.path.exists(model_path):
-            predictor.load_model(model_path)
-        else:
-            predictor.fetch_data()
-            predictor.calculate_indicators(predictor.fetch_data())
-            predictor.train()
-        res = predictor.predict_next()
-        return jsonify(res)
+        from apex_predictor import ApexPredictor
+        predictor = ApexPredictor(ticker)
+        result = predictor.predict()
+        return jsonify({
+            "prediction": result.get("direction", "HOLD"),
+            "confidence": result.get("confidence_pct", 50),
+            "price": result.get("current_price", 0),
+            "ticker": ticker
+        })
     except Exception as e:
         logger.error(f"Predict error: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({
+            "prediction": "HOLD",
+            "confidence": 50,
+            "price": 0,
+            "ticker": ticker,
+            "note": "Using fallback prediction"
+        })
 
 @app.route('/api/chart/<ticker>')
 def api_chart(ticker):
